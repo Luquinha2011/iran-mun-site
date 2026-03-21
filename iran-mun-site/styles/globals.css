@@ -558,3 +558,73 @@ mark.sh.active { background: var(--gold); color: var(--dark); }
   margin: 4px 0;
 }
 .access-blocked strong { color: var(--gold); }
+
+/* ── POWER FIGURES TABLE ── */
+.power-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+.power-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  min-width: 900px;
+}
+.power-table th {
+  background: var(--dark);
+  color: var(--gold);
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-bottom: 2px solid #333;
+  white-space: nowrap;
+}
+.power-row td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.power-row:last-child td { border-bottom: none; }
+.power-row:hover td { background: #f9f6f0; }
+.power-row.status-deceased td { opacity: 0.6; background: #fdf5f5; }
+.power-row.status-restricted td { background: #f5f0fd; }
+
+.rank-cell { text-align: center; }
+.rank-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: #f0f0f0; color: var(--mid);
+  font-size: 12px; font-weight: 700;
+}
+.rank-badge.top3 { background: var(--gold); color: white; }
+.rank-badge.top10 { background: var(--green); color: white; }
+
+.figure-name { font-weight: 700; color: var(--dark); font-size: 13px; }
+.figure-farsi { font-size: 11px; color: var(--light); margin-top: 2px; direction: rtl; }
+.figure-position { font-size: 12px; font-weight: 600; color: var(--dark); line-height: 1.4; }
+
+.health-badge {
+  display: inline-block;
+  padding: 2px 8px; border-radius: 3px;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
+.health-active { background: #e6f2ec; color: var(--green); }
+.health-deceased { background: #fde8e6; color: var(--red); }
+.health-restricted { background: #f0e6fd; color: #7d3c98; }
+
+.power-score-cell { text-align: center; }
+.power-score-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px; font-weight: 700;
+  color: var(--dark); margin-bottom: 4px;
+}
+.power-bar-outer {
+  height: 4px; background: #e0e0e0;
+  border-radius: 2px; overflow: hidden;
+  width: 60px; margin: 0 auto;
+}
+.power-bar-inner { height: 100%; border-radius: 2px; transition: width 0.3s; }
