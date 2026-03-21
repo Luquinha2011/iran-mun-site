@@ -494,3 +494,14 @@ mark.sh.active { background: var(--gold); color: var(--dark); }
   .chat-window { width: calc(100vw - 32px); right: 16px; bottom: 80px; }
   .chat-fab { right: 16px; bottom: 16px; }
 }
+
+/* BIGGER BRIEFING */
+.briefing-body { padding: 24px; }
+.briefing-section { margin-bottom: 20px; }
+.briefing-text { font-size: 14px; line-height: 1.75; color: rgba(255,255,255,0.88); }
+.briefing-label { font-size: 11px; letter-spacing: 2px; margin-bottom: 8px; }
+.briefing-points li { font-size: 14px; padding: 5px 0 5px 20px; line-height: 1.6; }
+.briefing-grid { gap: 14px; margin: 16px 0; }
+.briefing-box { padding: 16px 18px; }
+.briefing-header { padding: 18px 24px; }
+.briefing-header h2 { font-size: 18px; }
