@@ -372,3 +372,21 @@ mark.sh.active { background: var(--gold); color: var(--dark); }
   .nav-hamburger { display: block; }
   .nav-link { text-align: left; width: 100%; }
 }
+
+/* BRIEFING GRID */
+.briefing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 12px 0;
+}
+.briefing-box {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 3px;
+  padding: 14px;
+}
+.briefing-box .briefing-label { margin-bottom: 6px; }
+@media (max-width: 700px) {
+  .briefing-grid { grid-template-columns: 1fr; }
+}
