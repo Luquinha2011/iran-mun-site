@@ -1,22 +1,19 @@
 // pages/api/update.js
-// Calls Anthropic API to generate an AI briefing based on latest news
+// AI briefing using Groq (free) instead of Anthropic
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).end();
+  if (req.method !== 'POST') return res.status(405).end()
+  const { password, articles } = req.body
 
-  const { password, articles } = req.body;
+  if (password !== process.env.UPDATE_PASSWORD)
+    return res.status(401).json({ error: 'Incorrect password' })
 
-  // Simple password gate so only your team can trigger updates
-  if (password !== process.env.UPDATE_PASSWORD) {
-    return res.status(401).json({ error: 'Incorrect password' });
-  }
-
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not configured' });
+  const apiKey = process.env.GROQ_API_KEY
+  if (!apiKey) return res.status(500).json({ error: 'GROQ_API_KEY not configured' })
 
   const newsText = articles
     .map(a => `- [${a.source}] ${a.title}: ${a.description || ''}`)
-    .join('\n');
+    .join('\n')
 
   const prompt = `You are a senior MUN research analyst. Based on the following recent news headlines about Iran, write a concise intelligence briefing for a MUN team preparing to represent Iran at ECOSOC.
 
@@ -32,36 +29,37 @@ Write the briefing in this exact JSON format with no markdown or code fences:
   "talking_points": ["point 1", "point 2", "point 3"],
   "watch_out_for": "What opposing delegates will likely attack Iran on based on this news",
   "last_updated": "${new Date().toISOString()}"
-}`;
+}`
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'llama3-8b-8192',
         max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }],
+        messages: [
+          { role: 'system', content: 'You are a senior MUN research analyst. Always respond with valid JSON only, no markdown, no code fences.' },
+          { role: 'user', content: prompt }
+        ],
       }),
-    });
+    })
 
-    const data = await response.json();
-    const text = data.content?.[0]?.text || '';
+    const data = await response.json()
+    const text = data.choices?.[0]?.message?.content || ''
 
-    let briefing;
+    let briefing
     try {
-      briefing = JSON.parse(text);
+      briefing = JSON.parse(text)
     } catch {
-      // If parsing fails, return raw text
-      briefing = { summary: text, last_updated: new Date().toISOString() };
+      briefing = { summary: text, last_updated: new Date().toISOString() }
     }
 
-    return res.status(200).json({ briefing });
+    return res.status(200).json({ briefing })
   } catch (err) {
-    return res.status(500).json({ error: 'AI update failed', detail: err.message });
+    return res.status(500).json({ error: 'AI update failed', detail: err.message })
   }
 }
