@@ -22,7 +22,7 @@ const POWER_FIGURES = [
   {
     rank: 1,
     name: "Ali Khamenei",
-    nameFarsi: "علی خامنه‌ای",
+    nameFarsi: "علی خامنهای",
     position: "Supreme Leader (Rahbar)",
     institution: "Office of the Supreme Leader",
     religion: "Twelver Shia — Marja (Senior Jurist)",
@@ -87,7 +87,7 @@ const POWER_FIGURES = [
   {
     rank: 6,
     name: "Gholam-Hossein Mohseni-Ejei",
-    nameFarsi: "غلامحسین محسنی اژه‌ای",
+    nameFarsi: "غلامحسین محسنی اژهای",
     position: "Head of the Judiciary",
     institution: "Islamic Republic Judiciary",
     religion: "Twelver Shia — cleric (Hojatoleslam)",
@@ -204,7 +204,7 @@ const POWER_FIGURES = [
   {
     rank: 15,
     name: "Ahmad Alamolhoda",
-    nameFarsi: "احمد علم‌الهدی",
+    nameFarsi: "احمد علمالهدی",
     position: "Friday Prayer Leader, Mashhad / Member, Assembly of Experts",
     institution: "Assembly of Experts",
     religion: "Twelver Shia — Ayatollah",
@@ -1056,7 +1056,7 @@ export default function Home({ dynamic, generatedAt, user, logout }) {
           <div className="header-top">
             <div>
               <div className="country-name">Iran 🇮🇷</div>
-              <div className="country-sub">Islamic Republic of Iran &nbsp;·&nbsp; جمهوری اسلامی ایران</div>
+              <div className="country-sub">Islamic Republic of Iran · جمهوری اسلامی ایران</div>
               <div className="live-badge"><div className="live-dot"/>Auto-Updated Daily</div>
             </div>
             <div className="header-meta">
@@ -1757,7 +1757,7 @@ export default function Home({ dynamic, generatedAt, user, logout }) {
         </div>
 
         <div className="footer">
-          🇮🇷 &nbsp; IRAN — LIVE MUN RESEARCH PAGE &nbsp;·&nbsp; ECOSOC COMMITTEE &nbsp;·&nbsp; AUTO-UPDATED DAILY &nbsp;·&nbsp; FOR EDUCATIONAL USE &nbsp; 🇮🇷
+          🇮🇷  IRAN — LIVE MUN RESEARCH PAGE · ECOSOC COMMITTEE · AUTO-UPDATED DAILY · FOR EDUCATIONAL USE  🇮🇷
         </div>
 
       </div>
