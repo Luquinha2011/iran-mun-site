@@ -7,16 +7,409 @@ import Head from 'next/head'
 const NAV_SECTIONS = [
   { id: 'procedures', label: '📜 Procedures' },
   { id: 'live-intelligence', label: '🔴 Live Intel' },
-  { id: 'ai-briefing', label: '🤖 AI Briefing' },
   { id: 'geography', label: '📍 Geography' },
   { id: 'people', label: '👥 People' },
   { id: 'government', label: '🏛️ Government' },
+  { id: 'power-figures', label: '👑 Power Figures' },
   { id: 'history', label: '📅 History' },
   { id: 'ecosoc', label: '🌐 ECOSOC' },
   { id: 'toolkit', label: '🎤 MUN Toolkit' },
 ]
 
-// ─── STATIC DATA (never changes) ────────────────────────────────────────────
+// ─── TOP 30 POLITICAL FIGURES ────────────────────────────────────────────────
+
+const POWER_FIGURES = [
+  {
+    rank: 1,
+    name: "Ali Khamenei",
+    nameFarsi: "علی خامنه‌ای",
+    position: "Supreme Leader (Rahbar)",
+    institution: "Office of the Supreme Leader",
+    religion: "Twelver Shia — Marja (Senior Jurist)",
+    power: "Absolute — commands all armed forces, judiciary, foreign policy, media. Highest constitutional authority.",
+    health: "Deceased — assassinated February 28, 2026 during US-Israeli military strikes on Tehran.",
+    powerScore: 100,
+    status: "deceased",
+    note: "His death has created the most severe constitutional crisis in the history of the Islamic Republic."
+  },
+  {
+    rank: 2,
+    name: "Mohammad Hossein Bagheri",
+    nameFarsi: "محمدحسین باقری",
+    position: "Chief of Staff, Armed Forces",
+    institution: "General Staff of the Armed Forces",
+    religion: "Twelver Shia",
+    power: "Commands Iran's entire conventional military apparatus. De facto highest military authority post-Khamenei.",
+    health: "Active — status unknown following Feb 2026 strikes.",
+    powerScore: 88,
+    status: "active",
+    note: "Commands the Artesh (conventional forces). His coordination with the IRGC is the critical power axis."
+  },
+  {
+    rank: 3,
+    name: "Hossein Salami",
+    nameFarsi: "حسین سلامی",
+    position: "Commander-in-Chief, IRGC",
+    institution: "Islamic Revolutionary Guard Corps",
+    religion: "Twelver Shia",
+    power: "Commands Iran's most powerful military-political institution — nuclear programme, missile arsenal, proxy networks, intelligence.",
+    health: "Active — believed to be directing retaliatory operations as of March 2026.",
+    powerScore: 85,
+    status: "active",
+    note: "The IRGC is the real engine of Iranian foreign policy. Salami is arguably the most powerful figure currently operating."
+  },
+  {
+    rank: 4,
+    name: "Ahmad Vahidi",
+    nameFarsi: "احمد وحیدی",
+    position: "Minister of Interior",
+    institution: "Ministry of Interior",
+    religion: "Twelver Shia",
+    power: "Controls internal security, elections, provincial governors, and law enforcement coordination.",
+    health: "Active.",
+    powerScore: 72,
+    status: "active",
+    note: "Former IRGC Quds Force commander. Under US sanctions for his role in the 1994 Buenos Aires bombing."
+  },
+  {
+    rank: 5,
+    name: "Ali Larijani",
+    nameFarsi: "علی لاریجانی",
+    position: "Senior Advisor to the Supreme Leader",
+    institution: "Office of the Supreme Leader",
+    religion: "Twelver Shia — clerical family lineage",
+    power: "One of Iran's most experienced political operators. Former Speaker of Majles (parliament) for 12 years. Key intermediary between factions.",
+    health: "Active — widely mentioned as potential Supreme Leader candidate.",
+    powerScore: 70,
+    status: "active",
+    note: "His candidacy for Supreme Leader was barred by the Guardian Council in 2021 — he may now be positioned for succession."
+  },
+  {
+    rank: 6,
+    name: "Gholam-Hossein Mohseni-Ejei",
+    nameFarsi: "غلامحسین محسنی اژه‌ای",
+    position: "Head of the Judiciary",
+    institution: "Islamic Republic Judiciary",
+    religion: "Twelver Shia — cleric (Hojatoleslam)",
+    power: "Controls Iran's entire judicial system, including Revolutionary Courts that prosecute dissidents. Appointed by the Supreme Leader.",
+    health: "Active.",
+    powerScore: 68,
+    status: "active",
+    note: "Known for harsh sentences against protesters. Presided over mass trials following the 2022 and 2025-26 protests."
+  },
+  {
+    rank: 7,
+    name: "Masoud Pezeshkian",
+    nameFarsi: "مسعود پزشکیان",
+    position: "President of Iran",
+    institution: "Office of the Presidency",
+    religion: "Twelver Shia",
+    power: "Head of government — manages economic policy, cabinet, and diplomatic representation. Constitutionally subordinate to the Supreme Leader.",
+    health: "Active — elected July 2024 as a reformist candidate.",
+    powerScore: 65,
+    status: "active",
+    note: "His reformist agenda is heavily constrained by the Guardian Council and IRGC. The leadership vacuum has further reduced his effective authority."
+  },
+  {
+    rank: 8,
+    name: "Mohammad Mokhber",
+    nameFarsi: "محمد مخبر",
+    position: "First Vice President",
+    institution: "Office of the Presidency",
+    religion: "Twelver Shia",
+    power: "Constitutionally next in line to assume presidential duties. Close associate of Khamenei.",
+    health: "Active.",
+    powerScore: 60,
+    status: "active",
+    note: "Former head of Setad — Khamenei's vast economic empire. His constitutional role during the succession crisis is contested."
+  },
+  {
+    rank: 9,
+    name: "Abbas Araghchi",
+    nameFarsi: "عباس عراقچی",
+    position: "Minister of Foreign Affairs",
+    institution: "Ministry of Foreign Affairs",
+    religion: "Twelver Shia",
+    power: "Leads Iran's diplomatic engagement internationally, including nuclear negotiations and UN representation.",
+    health: "Active — leading Iran's diplomatic responses to the February 2026 conflict.",
+    powerScore: 58,
+    status: "active",
+    note: "Veteran nuclear negotiator who was a key architect of the 2015 JCPOA. Now navigating the post-conflict international landscape."
+  },
+  {
+    rank: 10,
+    name: "Mohammad Bagher Ghalibaf",
+    nameFarsi: "محمدباقر قالیباف",
+    position: "Speaker of the Islamic Consultative Assembly (Majles)",
+    institution: "Islamic Consultative Assembly",
+    religion: "Twelver Shia",
+    power: "Leads Iran's 290-member parliament. Former IRGC commander and Tehran mayor. Major political operator.",
+    health: "Active.",
+    powerScore: 55,
+    status: "active",
+    note: "Has run for president multiple times. Considered a hardliner with strong IRGC backing and significant political ambitions."
+  },
+  {
+    rank: 11,
+    name: "Esmail Qaani",
+    nameFarsi: "اسماعیل قاانی",
+    position: "Commander, IRGC Quds Force",
+    institution: "IRGC Quds Force",
+    religion: "Twelver Shia",
+    power: "Commands Iran's external operations force — manages all proxy relationships, foreign militias, and covert operations abroad.",
+    health: "Active — managing the degraded but operational Axis of Resistance.",
+    powerScore: 75,
+    status: "active",
+    note: "Succeeded Qasem Soleimani after his assassination in January 2020. Less charismatic but equally operationally significant."
+  },
+  {
+    rank: 12,
+    name: "Ahmad Khatami",
+    nameFarsi: "احمد خاتمی",
+    position: "Member, Assembly of Experts",
+    institution: "Assembly of Experts",
+    religion: "Twelver Shia — senior cleric (Ayatollah)",
+    power: "Senior hardline cleric on the body constitutionally responsible for selecting the next Supreme Leader.",
+    health: "Active — in emergency session for succession process.",
+    powerScore: 62,
+    status: "active",
+    note: "Known for extremely hawkish sermons. Has called for execution of protesters and dissidents."
+  },
+  {
+    rank: 13,
+    name: "Mohammad-Ali Jafari",
+    nameFarsi: "محمدعلی جعفری",
+    position: "Former IRGC Commander-in-Chief / Senior Military Advisor",
+    institution: "IRGC",
+    religion: "Twelver Shia",
+    power: "Retains significant influence within IRGC senior command networks.",
+    health: "Active.",
+    powerScore: 50,
+    status: "active",
+    note: "Commanded the IRGC 2007-2019. Still considered influential in IRGC strategic planning circles."
+  },
+  {
+    rank: 14,
+    name: "Sadegh Amoli Larijani",
+    nameFarsi: "صادق آملی لاریجانی",
+    position: "Chairman, Expediency Council",
+    institution: "Expediency Discernment Council",
+    religion: "Twelver Shia — Ayatollah",
+    power: "Chairs the body that arbitrates between parliament and the Guardian Council and advises the Supreme Leader.",
+    health: "Active.",
+    powerScore: 55,
+    status: "active",
+    note: "Brother of Ali Larijani. Former head of the Judiciary. Major conservative power broker."
+  },
+  {
+    rank: 15,
+    name: "Ahmad Alamolhoda",
+    nameFarsi: "احمد علم‌الهدی",
+    position: "Friday Prayer Leader, Mashhad / Member, Assembly of Experts",
+    institution: "Assembly of Experts",
+    religion: "Twelver Shia — Ayatollah",
+    power: "Controls Iran's most important religious city. Father-in-law of Ebrahim Raisi (deceased). Major clerical voice.",
+    health: "Active — vocal supporter of hardline succession.",
+    powerScore: 48,
+    status: "active",
+    note: "Mashhad's Friday prayers draw millions. His political sermons carry enormous weight among the conservative clerical base."
+  },
+  {
+    rank: 16,
+    name: "Ali Shamkhani",
+    nameFarsi: "علی شمخانی",
+    position: "Senior Political-Military Advisor",
+    institution: "Office of the Supreme Leader",
+    religion: "Twelver Shia",
+    power: "Former Secretary of Supreme National Security Council. One of Iran's most experienced strategic thinkers.",
+    health: "Active.",
+    powerScore: 52,
+    status: "active",
+    note: "Brokered the Saudi-Iran normalisation deal in Beijing in 2023. Retains significant back-channel diplomatic influence."
+  },
+  {
+    rank: 17,
+    name: "Mohsen Rezaee",
+    nameFarsi: "محسن رضایی",
+    position: "Secretary, Expediency Council",
+    institution: "Expediency Discernment Council",
+    religion: "Twelver Shia",
+    power: "Former IRGC commander. Significant influence in conservative political and economic circles.",
+    health: "Active.",
+    powerScore: 45,
+    status: "active",
+    note: "Wanted by Interpol for the 1994 Buenos Aires bombing. Has run for president four times. Known for economic nationalist positions."
+  },
+  {
+    rank: 18,
+    name: "Farhad Dejpasand",
+    nameFarsi: "فرهاد دژپسند",
+    position: "Former Minister of Economic Affairs / Senior Economic Advisor",
+    institution: "Ministry of Economic Affairs",
+    religion: "Twelver Shia",
+    power: "Key figure in managing Iran's sanctions-hit economy and foreign currency crisis.",
+    health: "Active.",
+    powerScore: 38,
+    status: "active",
+    note: "Iran's economic technocrats wield significant quiet power in managing the country's survival under maximum pressure."
+  },
+  {
+    rank: 19,
+    name: "Nasser Kanani",
+    nameFarsi: "ناصر کنعانی",
+    position: "Spokesman, Ministry of Foreign Affairs",
+    institution: "Ministry of Foreign Affairs",
+    religion: "Twelver Shia",
+    power: "Public face of Iran's diplomatic positions. Delivers official responses to international developments.",
+    health: "Active.",
+    powerScore: 30,
+    status: "active",
+    note: "His statements are carefully crafted official positions — useful for MUN delegates to reference as Iran's public posture."
+  },
+  {
+    rank: 20,
+    name: "Hossein Amir-Abdollahian",
+    nameFarsi: "حسین امیرعبداللهیان",
+    position: "Former Minister of Foreign Affairs",
+    institution: "Ministry of Foreign Affairs",
+    religion: "Twelver Shia",
+    power: "Deceased — killed in helicopter crash May 2024 alongside President Raisi.",
+    health: "Deceased — May 19, 2024.",
+    powerScore: 0,
+    status: "deceased",
+    note: "His death alongside Raisi significantly disrupted Iran's foreign policy continuity before the current crisis."
+  },
+  {
+    rank: 21,
+    name: "Ebrahim Raisi",
+    nameFarsi: "ابراهیم رئیسی",
+    position: "Former President of Iran",
+    institution: "Office of the Presidency",
+    religion: "Twelver Shia — cleric (Hojatoleslam)",
+    power: "Deceased — killed in helicopter crash May 2024.",
+    health: "Deceased — May 19, 2024.",
+    powerScore: 0,
+    status: "deceased",
+    note: "Was considered the frontrunner for Supreme Leader succession. His death created a significant power vacuum that directly contributed to the current crisis."
+  },
+  {
+    rank: 22,
+    name: "Gholamhossein Ismaili",
+    nameFarsi: "غلامحسین اسماعیلی",
+    position: "Head of the President's Office",
+    institution: "Office of the Presidency",
+    religion: "Twelver Shia",
+    power: "Controls access to the President. Key administrative gatekeeper.",
+    health: "Active.",
+    powerScore: 35,
+    status: "active",
+    note: "Former head of Iran's Prison Organisation. Close to hardline factions."
+  },
+  {
+    rank: 23,
+    name: "Hassan Rouhani",
+    nameFarsi: "حسن روحانی",
+    position: "Former President / Member, Expediency Council",
+    institution: "Expediency Discernment Council",
+    religion: "Twelver Shia — cleric (Hojatoleslam)",
+    power: "Retains moderate influence. Architect of the 2015 JCPOA. Under significant political pressure from hardliners.",
+    health: "Active — politically marginalised.",
+    powerScore: 28,
+    status: "active",
+    note: "His political movement has been effectively dismantled. Represents the reformist wing that has been systematically blocked by the Guardian Council."
+  },
+  {
+    rank: 24,
+    name: "Yahya Rahim Safavi",
+    nameFarsi: "یحیی رحیم صفوی",
+    position: "Senior Military Advisor to the Supreme Leader",
+    institution: "Office of the Supreme Leader",
+    religion: "Twelver Shia",
+    power: "Former IRGC commander. Senior military advisor with direct access to the Supreme Leader's office.",
+    health: "Active.",
+    powerScore: 42,
+    status: "active",
+    note: "One of the architects of Iran's regional military strategy. Significant informal influence over IRGC doctrine."
+  },
+  {
+    rank: 25,
+    name: "Mahmoud Alavi",
+    nameFarsi: "محمود علوی",
+    position: "Former Minister of Intelligence",
+    institution: "Ministry of Intelligence",
+    religion: "Twelver Shia — cleric",
+    power: "Former head of Iran's civilian intelligence service. Retains networks within the intelligence community.",
+    health: "Active.",
+    powerScore: 36,
+    status: "active",
+    note: "Iran's intelligence apparatus — separate from IRGC intelligence — is a significant parallel power structure."
+  },
+  {
+    rank: 26,
+    name: "Ali Akbar Velayati",
+    nameFarsi: "علی اکبر ولایتی",
+    position: "Senior International Affairs Advisor to the Supreme Leader",
+    institution: "Office of the Supreme Leader",
+    religion: "Twelver Shia",
+    power: "Advises the Supreme Leader on all international matters. Former foreign minister for 16 years (1981-1997).",
+    health: "Active — elderly but politically relevant.",
+    powerScore: 40,
+    status: "active",
+    note: "His longevity in the system gives him unparalleled institutional knowledge. Considered a moderate conservative."
+  },
+  {
+    rank: 27,
+    name: "Mir-Hossein Mousavi",
+    nameFarsi: "میرحسین موسوی",
+    position: "Former Prime Minister / Reform Leader",
+    institution: "Under house arrest",
+    religion: "Twelver Shia",
+    power: "Effectively zero formal power — under house arrest since 2011 following the Green Movement.",
+    health: "Under house arrest — health status unknown.",
+    powerScore: 5,
+    status: "restricted",
+    note: "Symbolic figure of the reform movement. His continued detention represents the regime's refusal to acknowledge political opposition."
+  },
+  {
+    rank: 28,
+    name: "Mohammad Javad Zarif",
+    nameFarsi: "محمدجواد ظریف",
+    position: "Former Foreign Minister / Senior Diplomatic Advisor",
+    institution: "Ministry of Foreign Affairs (advisory)",
+    religion: "Twelver Shia",
+    power: "Limited formal power — but widely respected internationally. Architect of Iran's Western diplomatic engagement.",
+    health: "Active — politically constrained.",
+    powerScore: 25,
+    status: "active",
+    note: "Negotiated the 2015 JCPOA. Now serving in an advisory capacity under President Pezeshkian. Distrusted by hardliners."
+  },
+  {
+    rank: 29,
+    name: "Abdolnaser Hemmati",
+    nameFarsi: "عبدالناصر همتی",
+    position: "Former Governor, Central Bank of Iran",
+    institution: "Central Bank of Iran",
+    religion: "Twelver Shia",
+    power: "Former head of Iran's blacklisted Central Bank. Key figure in managing the currency crisis.",
+    health: "Active.",
+    powerScore: 22,
+    status: "active",
+    note: "The Central Bank's isolation from SWIFT and international banking is the single most damaging economic sanction Iran faces."
+  },
+  {
+    rank: 30,
+    name: "Saeed Jalili",
+    nameFarsi: "سعید جلیلی",
+    position: "Secretary, Supreme National Security Council (former) / Senior Negotiator",
+    institution: "Supreme National Security Council",
+    religion: "Twelver Shia",
+    power: "Iran's most hardline nuclear negotiator. Known for maximalist positions that collapsed multiple rounds of talks.",
+    health: "Active — significant political influence among ultra-conservatives.",
+    powerScore: 32,
+    status: "active",
+    note: "Lost the 2024 presidential election to Pezeshkian. His faction remains powerful within the IRGC and conservative clerical establishment."
+  },
+]
 
 const QUICK_STATS = [
   { label: "Population", value: "92.4M", unit: "17th globally" },
@@ -1156,7 +1549,84 @@ export default function Home({ dynamic, generatedAt, user, logout }) {
 
         </div>
 
-        {/* ── SECTION 5: HISTORY ── */}
+        </div>
+
+        {/* ── SECTION: POWER FIGURES ── */}
+        <div id="power-figures">
+        <SectionDivider emoji="👑" title="Top 30 Political Figures — Ranked by Power" />
+        <div className="main">
+          <Card emoji="ℹ️" title="About This Ranking" fullWidth>
+            <p className="prose">Figures are ranked by their effective political power as of March 2026 — accounting for institutional position, IRGC alignment, clerical authority, factional support, and actual decision-making influence. Formal titles do not always reflect real power in the Islamic Republic. The assassination of Supreme Leader Khamenei on February 28, 2026 has fundamentally reshuffled this ranking — the succession crisis means power is currently concentrated in the IRGC and the Assembly of Experts.</p>
+          </Card>
+
+          <div className="full-width">
+            <div className="power-table-wrapper">
+              <table className="power-table">
+                <thead>
+                  <tr>
+                    <th style={{width: 50}}>Rank</th>
+                    <th style={{width: 180}}>Name</th>
+                    <th style={{width: 160}}>Position</th>
+                    <th style={{width: 120}}>Institution</th>
+                    <th style={{width: 100}}>Religion</th>
+                    <th>Power & Influence</th>
+                    <th style={{width: 130}}>Health Status</th>
+                    <th style={{width: 80}}>Power</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {POWER_FIGURES.map((f) => (
+                    <tr key={f.rank} className={`power-row status-${f.status}`}>
+                      <td className="rank-cell">
+                        <span className={`rank-badge ${f.rank <= 3 ? 'top3' : f.rank <= 10 ? 'top10' : ''}`}>
+                          {f.rank}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="figure-name">{f.name}</div>
+                        <div className="figure-farsi">{f.nameFarsi}</div>
+                      </td>
+                      <td>
+                        <div className="figure-position">{f.position}</div>
+                      </td>
+                      <td>
+                        <div style={{fontSize: 11, color: 'var(--mid)'}}>{f.institution}</div>
+                      </td>
+                      <td>
+                        <div style={{fontSize: 11, color: 'var(--mid)'}}>{f.religion}</div>
+                      </td>
+                      <td>
+                        <div style={{fontSize: 12, color: 'var(--mid)', lineHeight: 1.5}}>{f.power}</div>
+                        {f.note && <div style={{fontSize: 11, color: 'var(--light)', fontStyle: 'italic', marginTop: 4}}>→ {f.note}</div>}
+                      </td>
+                      <td>
+                        <span className={`health-badge health-${f.status}`}>
+                          {f.status === 'deceased' ? '💀 Deceased' : f.status === 'restricted' ? '🔒 Restricted' : '✅ Active'}
+                        </span>
+                        <div style={{fontSize: 11, color: 'var(--light)', marginTop: 4, lineHeight: 1.4}}>{f.health}</div>
+                      </td>
+                      <td className="power-score-cell">
+                        {f.powerScore > 0 ? (
+                          <>
+                            <div className="power-score-num">{f.powerScore}</div>
+                            <div className="power-bar-outer">
+                              <div className="power-bar-inner" style={{width: `${f.powerScore}%`, background: f.powerScore >= 80 ? 'var(--red)' : f.powerScore >= 50 ? 'var(--gold)' : 'var(--green)'}}></div>
+                            </div>
+                          </>
+                        ) : (
+                          <div style={{fontSize: 11, color: 'var(--light)'}}>N/A</div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        </div>
+
+        {/* ── SECTION: HISTORY ── */}
         <div id="history">
         <SectionDivider emoji="📅" title="Section 5 — Historical Timeline" />
         <div className="main">
