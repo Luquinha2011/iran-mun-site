@@ -621,7 +621,7 @@ export default function Home({ dynamic, generatedAt }) {
 
         {/* ── SECTION 2: GEOGRAPHY ── */}
         <div id="geography">
-        <SectionDivider emoji="📍" title="Section 2 — Geography & Environment" />
+        <SectionDivider emoji="📍" title="Section 2 — Geography and Environment" />
         <div className="main">
           <Card emoji="🗺️" title="Physical Geography">
             <InfoRow label="Region" value="West Asia (Middle East)" />
@@ -663,7 +663,7 @@ export default function Home({ dynamic, generatedAt }) {
 
         {/* ── SECTION 3: PEOPLE ── */}
         <div id="people">
-        <SectionDivider emoji="👥" title="Section 3 — People, Society & Culture" />
+        <SectionDivider emoji="👥" title="Section 3 — People, Society and Culture" />
         <div className="main">
           <Card emoji="🧬" title="Demographics">
             <InfoRow label="Population" value="~92.4 million (2025)" />
@@ -688,7 +688,7 @@ export default function Home({ dynamic, generatedAt }) {
               </div>
             </div>
           </Card>
-          <Card emoji="🕌" title="Religion & Society">
+          <Card emoji="🕌" title="Religion and Society">
             <InfoRow label="State Religion" value="Twelver Shia Islam" />
             <InfoRow label="Shia Muslims" value="~90–95% of population" />
             <InfoRow label="Sunni Muslims" value="~5–8% (Kurdish, Balochi communities)" note />
@@ -707,7 +707,7 @@ export default function Home({ dynamic, generatedAt }) {
 
         {/* ── SECTION 4: GOVERNMENT ── */}
         <div id="government">
-        <SectionDivider emoji="🏛️" title="Section 4 — Government & Political Structure" />
+        <SectionDivider emoji="🏛️" title="Section 4 — Government and Political Structure" />
         <div className="main">
           <Card emoji="⚖️" title="Constitutional Structure">
             <InfoRow label="System" value="Islamic Republic (Velayat-e Faqih)" />
@@ -719,7 +719,7 @@ export default function Home({ dynamic, generatedAt }) {
             <InfoRow label="Assembly of Experts" value="88 clerics who elect and dismiss the Supreme Leader" note />
             <InfoRow label="Judiciary" value="Head appointed by Supreme Leader; Sharia law applied" note />
           </Card>
-          <Card emoji="💣" title="Military & Security">
+          <Card emoji="💣" title="Military and Security">
             <Box type="blue" title="🪖 Artesh — Conventional Military">
               Ranked 16th globally (Global Firepower Index 2026). Significant capabilities degraded by Israeli strikes in June 2025.
             </Box>
@@ -841,7 +841,7 @@ export default function Home({ dynamic, generatedAt }) {
 
         {/* ── SECTION 8: MUN PROCEDURES ── */}
         <div id="procedures">
-        <SectionDivider emoji="📜" title="Section 8 — MUN Procedures & Terminology" />
+        <SectionDivider emoji="📜" title="Section 8 — MUN Procedures and Terminology" />
         <div className="main">
 
           <Card emoji="🎙️" title="Points" fullWidth>
@@ -898,11 +898,11 @@ export default function Home({ dynamic, generatedAt }) {
           </Card>
 
           <Card emoji="💬" title="Caucuses">
-            <div className="box highlight" style={{marginBottom: 12}}>
+            <div className="box highlight" style={{"marginBottom": "12px"}}>
               <div className="box-title">🎤 Moderated Caucus</div>
               <p>Formal but faster-paced discussion. The Chair calls on delegates one at a time for short speeches (typically 30–60 seconds each). Used to debate specific sub-topics within the main agenda. A delegate motions for a moderated caucus by stating the total time and speaking time per delegate.</p>
             </div>
-            <div className="box green" style={{marginBottom: 12}}>
+            <div className="box green" style={{"marginBottom": "12px"}}>
               <div className="box-title">🤝 Unmoderated Caucus</div>
               <p>Informal networking time. Delegates leave their seats and talk freely to negotiate, build blocs, and draft resolutions. The Chair does not moderate. Motion must include a total time. This is where most of the real diplomacy happens — use it aggressively.</p>
             </div>
@@ -912,16 +912,16 @@ export default function Home({ dynamic, generatedAt }) {
             </div>
           </Card>
 
-          <Card emoji="📝" title="Speeches & Yields">
-            <div className="box blue" style={{marginBottom: 12}}>
+          <Card emoji="📝" title="Speeches and Yields">
+            <div className="box blue" style={{"marginBottom": "12px"}}>
               <div className="box-title">⏱️ Speakers List</div>
               <p>The formal queue of delegates who wish to speak. Add yourself by raising your placard when the Chair asks. Each speaker gets a set time (typically 60–90 seconds). You can yield your remaining time at the end of your speech.</p>
             </div>
-            <div className="box highlight" style={{marginBottom: 12}}>
+            <div className="box highlight" style={{"marginBottom": "12px"}}>
               <div className="box-title">🔄 Yield to Another Delegate</div>
               <p>At the end of your speech, if you have time remaining, you can yield it to a specific delegate — they then use your remaining time. Used tactically to give allies more speaking time.</p>
             </div>
-            <div className="box green" style={{marginBottom: 12}}>
+            <div className="box green" style={{"marginBottom": "12px"}}>
               <div className="box-title">❓ Yield to Points of Information</div>
               <p>You open yourself to questions from other delegates after your speech. Risky if your position is weak — but powerful if you are confident. Other delegates raise their placards and the Chair selects who may question you.</p>
             </div>
@@ -960,15 +960,15 @@ export default function Home({ dynamic, generatedAt }) {
           </Card>
 
           <Card emoji="🗺️" title="Voting Procedure">
-            <div className="box green" style={{marginBottom: 12}}>
+            <div className="box green" style={{"marginBottom": "12px"}}>
               <div className="box-title">✅ Yes / For</div>
               <p>You support the resolution or motion as written.</p>
             </div>
-            <div className="box alert" style={{marginBottom: 12}}>
+            <div className="box alert" style={{"marginBottom": "12px"}}>
               <div className="box-title">❌ No / Against</div>
               <p>You oppose the resolution or motion.</p>
             </div>
-            <div className="box highlight" style={{marginBottom: 12}}>
+            <div className="box highlight" style={{"marginBottom": "12px"}}>
               <div className="box-title">➖ Abstain</div>
               <p>You neither support nor oppose. You are present but not voting. Abstentions count toward quorum but not toward the majority needed to pass. Iran often abstains on resolutions it disagrees with procedurally but does not want to formally oppose.</p>
             </div>
@@ -1009,6 +1009,8 @@ export default function Home({ dynamic, generatedAt }) {
 
         </div>
         </div>
+
+        <div className="footer">
           🇮🇷 &nbsp; IRAN — LIVE MUN RESEARCH PAGE &nbsp;·&nbsp; ECOSOC COMMITTEE &nbsp;·&nbsp; AUTO-UPDATED DAILY &nbsp;·&nbsp; FOR EDUCATIONAL USE &nbsp; 🇮🇷
         </div>
 
