@@ -201,17 +201,68 @@ function AIBriefing({ briefing, loading }) {
         )}
       </div>
       <div className="briefing-body">
-        {briefing.summary && <div className="briefing-section"><div className="briefing-label">Executive Summary</div><div className="briefing-text">{briefing.summary}</div></div>}
-        {briefing.ecosoc_impact && <div className="briefing-section"><div className="briefing-label">ECOSOC Impact</div><div className="briefing-text">{briefing.ecosoc_impact}</div></div>}
-        {briefing.sanctions_update && <div className="briefing-section"><div className="briefing-label">Sanctions Update</div><div className="briefing-text">{briefing.sanctions_update}</div></div>}
-        {briefing.military_update && <div className="briefing-section"><div className="briefing-label">Military & Conflict</div><div className="briefing-text">{briefing.military_update}</div></div>}
+        {briefing.summary && (
+          <div className="briefing-section">
+            <div className="briefing-label">📋 Executive Summary</div>
+            <div className="briefing-text">{briefing.summary}</div>
+          </div>
+        )}
+        {briefing.situation_overview && (
+          <div className="briefing-section">
+            <div className="briefing-label">🌍 Situation Overview</div>
+            <div className="briefing-text">{briefing.situation_overview}</div>
+          </div>
+        )}
+        <div className="briefing-grid">
+          {briefing.ecosoc_impact && (
+            <div className="briefing-box">
+              <div className="briefing-label">🌐 ECOSOC Impact</div>
+              <div className="briefing-text">{briefing.ecosoc_impact}</div>
+            </div>
+          )}
+          {briefing.sanctions_update && (
+            <div className="briefing-box">
+              <div className="briefing-label">🔒 Sanctions Update</div>
+              <div className="briefing-text">{briefing.sanctions_update}</div>
+            </div>
+          )}
+          {briefing.military_update && (
+            <div className="briefing-box">
+              <div className="briefing-label">💣 Military Update</div>
+              <div className="briefing-text">{briefing.military_update}</div>
+            </div>
+          )}
+          {briefing.leadership_crisis && (
+            <div className="briefing-box">
+              <div className="briefing-label">👤 Leadership Crisis</div>
+              <div className="briefing-text">{briefing.leadership_crisis}</div>
+            </div>
+          )}
+        </div>
         {briefing.talking_points?.length > 0 && (
           <div className="briefing-section">
-            <div className="briefing-label">Fresh Talking Points</div>
+            <div className="briefing-label">🗣️ Talking Points</div>
             <ul className="briefing-points">{briefing.talking_points.map((p, i) => <li key={i}>{p}</li>)}</ul>
           </div>
         )}
-        {briefing.watch_out_for && <div className="briefing-section"><div className="briefing-label" style={{ color: '#ff9999' }}>⚠️ Watch Out For</div><div className="briefing-text">{briefing.watch_out_for}</div></div>}
+        {briefing.counter_arguments?.length > 0 && (
+          <div className="briefing-section">
+            <div className="briefing-label">⚔️ Counter-Arguments</div>
+            <ul className="briefing-points">{briefing.counter_arguments.map((p, i) => <li key={i}>{p}</li>)}</ul>
+          </div>
+        )}
+        {briefing.watch_out_for && (
+          <div className="briefing-section">
+            <div className="briefing-label" style={{ color: '#ff9999' }}>⚠️ Watch Out For</div>
+            <div className="briefing-text">{briefing.watch_out_for}</div>
+          </div>
+        )}
+        {briefing.recommended_actions?.length > 0 && (
+          <div className="briefing-section">
+            <div className="briefing-label" style={{ color: '#90ee90' }}>✅ Recommended Actions</div>
+            <ul className="briefing-points">{briefing.recommended_actions.map((p, i) => <li key={i}>{p}</li>)}</ul>
+          </div>
+        )}
       </div>
     </div>
   )
