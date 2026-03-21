@@ -1,5 +1,5 @@
 // pages/api/update.js
-// AI briefing using Groq (free) instead of Anthropic
+// AI briefing using Groq (free)
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
@@ -11,23 +11,24 @@ export default async function handler(req, res) {
   const apiKey = process.env.GROQ_API_KEY
   if (!apiKey) return res.status(500).json({ error: 'GROQ_API_KEY not configured' })
 
-  const newsText = articles
-    .map(a => `- [${a.source}] ${a.title}: ${a.description || ''}`)
+  const newsText = (articles || [])
+    .slice(0, 10)
+    .map(a => `- ${a.title || ''}`)
     .join('\n')
 
-  const prompt = `You are a senior MUN research analyst. Based on the following recent news headlines about Iran, write a concise intelligence briefing for a MUN team preparing to represent Iran at ECOSOC.
+  const prompt = `You are a MUN research analyst for Iran at ECOSOC. Based on these recent headlines, write a briefing. Respond ONLY with a JSON object, no other text, no markdown, no backticks.
 
-RECENT NEWS:
+HEADLINES:
 ${newsText}
 
-Write the briefing in this exact JSON format with no markdown or code fences:
+JSON format:
 {
-  "summary": "2-3 sentence executive summary of the most important developments",
-  "ecosoc_impact": "How these developments affect Iran's position and strategy in ECOSOC specifically",
-  "sanctions_update": "Any sanctions-related developments and their implications",
-  "military_update": "Any military or conflict developments relevant to MUN positioning",
-  "talking_points": ["point 1", "point 2", "point 3"],
-  "watch_out_for": "What opposing delegates will likely attack Iran on based on this news",
+  "summary": "2 sentence summary of key developments",
+  "ecosoc_impact": "1-2 sentences on ECOSOC implications",
+  "sanctions_update": "1-2 sentences on sanctions situation",
+  "military_update": "1-2 sentences on military situation",
+  "talking_points": ["talking point 1", "talking point 2", "talking point 3"],
+  "watch_out_for": "1 sentence on what opposing delegates will attack",
   "last_updated": "${new Date().toISOString()}"
 }`
 
@@ -40,25 +41,62 @@ Write the briefing in this exact JSON format with no markdown or code fences:
       },
       body: JSON.stringify({
         model: 'llama3-8b-8192',
-        max_tokens: 1000,
+        max_tokens: 800,
+        temperature: 0.3,
         messages: [
-          { role: 'system', content: 'You are a senior MUN research analyst. Always respond with valid JSON only, no markdown, no code fences.' },
+          {
+            role: 'system',
+            content: 'You are a JSON-only API. You output raw JSON with no markdown, no backticks, no code fences, no explanation. Only valid JSON.'
+          },
           { role: 'user', content: prompt }
         ],
       }),
     })
 
     const data = await response.json()
-    const text = data.choices?.[0]?.message?.content || ''
+    let text = data.choices?.[0]?.message?.content || ''
+
+    // Strip any markdown code fences if Groq adds them anyway
+    text = text.replace(/```json/gi, '').replace(/```/g, '').trim()
+
+    // Find the JSON object within the response
+    const jsonStart = text.indexOf('{')
+    const jsonEnd = text.lastIndexOf('}')
+    if (jsonStart !== -1 && jsonEnd !== -1) {
+      text = text.substring(jsonStart, jsonEnd + 1)
+    }
 
     let briefing
     try {
       briefing = JSON.parse(text)
     } catch {
-      briefing = { summary: text, last_updated: new Date().toISOString() }
+      briefing = {
+        summary: text.substring(0, 300) || 'Unable to parse AI response.',
+        ecosoc_impact: 'See summary above.',
+        sanctions_update: 'Check live news feed for latest sanctions developments.',
+        military_update: 'Check live news feed for latest military developments.',
+        talking_points: [
+          'Sovereign equality under the UN Charter',
+          'Sanctions constitute collective punishment of civilians',
+          'Double standards in international accountability'
+        ],
+        watch_out_for: 'Human rights record, nuclear enrichment levels, proxy network activities.',
+        last_updated: new Date().toISOString()
+      }
     }
 
-    return res.status(200).json({ briefing })
+    // Ensure all fields exist and are safe types
+    const safe = {
+      summary: String(briefing.summary || ''),
+      ecosoc_impact: String(briefing.ecosoc_impact || ''),
+      sanctions_update: String(briefing.sanctions_update || ''),
+      military_update: String(briefing.military_update || ''),
+      talking_points: Array.isArray(briefing.talking_points) ? briefing.talking_points.map(String) : [],
+      watch_out_for: String(briefing.watch_out_for || ''),
+      last_updated: String(briefing.last_updated || new Date().toISOString())
+    }
+
+    return res.status(200).json({ briefing: safe })
   } catch (err) {
     return res.status(500).json({ error: 'AI update failed', detail: err.message })
   }
