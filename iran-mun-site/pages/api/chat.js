@@ -1,6 +1,4 @@
 // pages/api/chat.js
-// Chatbot API route — powered by Groq (free)
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
@@ -14,20 +12,18 @@ export default async function handler(req, res) {
 
   const systemPrompt = `You are an expert MUN research assistant specializing in Iran's position at ECOSOC. You have deep knowledge of:
 
-- Iran's political system (Velayat-e Faqih, IRGC, Guardian Council, Assembly of Experts)
-- The 2026 crisis: Khamenei's assassination on Feb 28 2026, mass protests, US-Israeli military strikes
-- ECOSOC procedures, Iran's removal from the CSW in 2022 (29-8 vote), UN sanctions
-- The JCPOA snapback mechanism reimposed September 2025 by UK, France, Germany
-- Iran's economic situation: hyperinflation, shadow oil fleet, China partnership
-- Iran's nuclear programme: 60% enrichment, June 2025 Israeli strikes, hidden facility discovered Jan 2026
-- MUN procedures: points of order, personal privilege, motions, caucuses, resolutions, yields
+- Iran's political system: Velayat-e Faqih, IRGC, Guardian Council, Assembly of Experts
+- The 2026 crisis: Khamenei assassinated Feb 28 2026, mass protests Dec 2025-Jan 2026, US-Israeli military strikes
+- ECOSOC: Iran removed from CSW in 2022 (vote 29-8), UN sanctions reimposed Sept 2025 via JCPOA snapback
+- JCPOA: 2015 nuclear deal, US withdrew 2018, snapback triggered by UK/France/Germany Sept 2025
+- Iran's economy: hyperinflation, shadow oil fleet to China, Central Bank blacklisted, SWIFT access severed
+- Nuclear programme: 60% enrichment, June 2025 Israeli strikes, hidden facility found Jan 2026
+- MUN procedures: points of order, personal privilege, motions, caucuses, resolutions, amendments, yields
 - Iran's core arguments: sovereign equality, collective punishment, double standards, anti-imperialism
-- Key vocabulary: Nowruz, Shahnameh, Ta'arof, Fatwa, Axis of Resistance, Rahbar
-- Iran's allies: Russia, China, G-77, Non-Aligned Movement, Cuba, Venezuela
+- Key vocabulary: Nowruz, Shahnameh, Ta'arof, Fatwa, Axis of Resistance, Rahbar, Velayat-e Faqih
+- Iran's allies: Russia (P5 veto), China (P5 veto), G-77, Non-Aligned Movement, Cuba, Venezuela, Syria
 
-You help MUN delegates prepare speeches, arguments, counter-arguments, and procedural tactics. You are knowledgeable, precise, and always frame answers from Iran's perspective when asked for MUN advice.
-
-Keep responses concise but thorough. Use bullet points when listing multiple items. Be direct and practical.`
+You help MUN delegates prepare speeches, arguments, and procedural tactics. Be concise but thorough. Use bullet points for lists. Be direct and practical. When asked for MUN advice, always frame from Iran's perspective.`
 
   try {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -37,21 +33,40 @@ Keep responses concise but thorough. Use bullet points when listing multiple ite
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'llama3-8b-8192',
-        max_tokens: 600,
+        model: 'llama-3.1-8b-instant',
+        max_tokens: 500,
         temperature: 0.4,
         messages: [
           { role: 'system', content: systemPrompt },
-          ...messages.slice(-8) // Keep last 8 messages for context
+          ...messages.slice(-6)
         ],
       }),
     })
 
+    if (!response.ok) {
+      const errData = await response.json()
+      console.error('Groq error:', JSON.stringify(errData))
+      
+      // If rate limited, return a helpful message
+      if (response.status === 429) {
+        return res.status(200).json({ 
+          reply: "I'm temporarily rate limited — the free Groq plan has usage limits. Please wait 30 seconds and try again. In the meantime, check the research sections above for the information you need." 
+        })
+      }
+      
+      return res.status(200).json({ 
+        reply: `API error: ${errData?.error?.message || 'Unknown error'}. Please try again.` 
+      })
+    }
+
     const data = await response.json()
-    const reply = data.choices?.[0]?.message?.content || 'Sorry, I could not generate a response. Please try again.'
+    const reply = data.choices?.[0]?.message?.content || 'Sorry, no response generated. Please try again.'
 
     return res.status(200).json({ reply })
   } catch (err) {
-    return res.status(500).json({ error: 'Chat failed', detail: err.message })
+    console.error('Chat error:', err.message)
+    return res.status(200).json({ 
+      reply: 'Connection error. Please check your internet connection and try again.' 
+    })
   }
 }
