@@ -5,14 +5,15 @@ import Head from 'next/head'
 // ─── NAVIGATION SECTIONS ─────────────────────────────────────────────────────
 
 const NAV_SECTIONS = [
+  { id: 'procedures', label: '📜 Procedures' },
   { id: 'live-intelligence', label: '🔴 Live Intel' },
+  { id: 'ai-briefing', label: '🤖 AI Briefing' },
   { id: 'geography', label: '📍 Geography' },
   { id: 'people', label: '👥 People' },
   { id: 'government', label: '🏛️ Government' },
   { id: 'history', label: '📅 History' },
   { id: 'ecosoc', label: '🌐 ECOSOC' },
   { id: 'toolkit', label: '🎤 MUN Toolkit' },
-  { id: 'procedures', label: '📜 Procedures' },
 ]
 
 // ─── STATIC DATA (never changes) ────────────────────────────────────────────
@@ -705,9 +706,181 @@ export default function Home({ dynamic, generatedAt }) {
           <button className="nav-btn" onClick={() => jump(1)} disabled={highlights.length === 0}>▼</button>
         </div>
 
-        {/* ── SECTION 1: LIVE INTELLIGENCE ── */}
+
+        {/* ── SECTION 1: MUN PROCEDURES (moved to top) ── */}
+        <div id="procedures">
+        <SectionDivider emoji="📜" title="Section 1 — MUN Procedures and Terminology" />
+        <div className="main">
+
+          <Card emoji="🎙️" title="Points" fullWidth>
+            <table className="data-table">
+              <thead><tr><th>Point</th><th>What It Means</th><th>When To Use It</th><th>Can Be Interrupted?</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>📢 Point of Personal Privilege</td>
+                  <td>A delegate is experiencing a personal discomfort that prevents them from fully participating — cannot hear, room too hot, microphone not working, etc.</td>
+                  <td>When you genuinely cannot hear the speaker or there is a physical issue. Not to be abused — it interrupts the speaker and the Chair will notice if used frivolously.</td>
+                  <td>Yes — can interrupt a speaker</td>
+                </tr>
+                <tr>
+                  <td>⚖️ Point of Order</td>
+                  <td>A delegate believes the Chair or another delegate has made a procedural error — the rules of procedure are not being followed correctly.</td>
+                  <td>When the Chair misapplies a rule, miscounts a vote, or the committee strays from proper procedure. Not for substantive disagreements — only procedural ones.</td>
+                  <td>Yes — can interrupt a speaker</td>
+                </tr>
+                <tr>
+                  <td>ℹ️ Point of Information (to the Chair)</td>
+                  <td>A delegate has a question about procedure directed at the Chair.</td>
+                  <td>When you are unclear about how a rule works or what the current procedure is. The Chair answers.</td>
+                  <td>No — cannot interrupt a speaker</td>
+                </tr>
+                <tr>
+                  <td>❓ Point of Information (to the Speaker)</td>
+                  <td>A delegate wishes to ask a question of the delegate currently speaking, subject to that delegate's consent.</td>
+                  <td>After a speech, if the speaker yields to points of information. You ask a direct question — usually to challenge or clarify their argument.</td>
+                  <td>No — only after the speech</td>
+                </tr>
+                <tr>
+                  <td>🔍 Point of Inquiry</td>
+                  <td>Used in some MUN conferences as an alternative name for a question directed at the Chair about procedure.</td>
+                  <td>Same as Point of Information to the Chair — varies by conference rules. Always check your specific conference's rules of procedure.</td>
+                  <td>No</td>
+                </tr>
+              </tbody>
+            </table>
+          </Card>
+
+          <Card emoji="🗳️" title="Motions">
+            <table className="data-table">
+              <thead><tr><th>Motion</th><th>What It Does</th></tr></thead>
+              <tbody>
+                <tr><td>📋 Motion to Open Debate</td><td>Formally begins debate on the agenda topic. Usually the first motion of any committee session.</td></tr>
+                <tr><td>🔇 Motion to Table / Postpone</td><td>Suspends or delays debate on the current topic. In some conferences "table" means to set aside indefinitely; in others it means to bring something forward. Always check your conference's definition.</td></tr>
+                <tr><td>🔁 Motion to Reconsider</td><td>Requests that a previously passed resolution or motion be voted on again. Requires a second and a majority vote.</td></tr>
+                <tr><td>🚪 Motion to Close Debate</td><td>Ends the speakers list and moves the committee to vote on resolutions. Requires a second and passes by a two-thirds majority in most conferences.</td></tr>
+                <tr><td>⏸️ Motion to Suspend Debate</td><td>Temporarily pauses formal debate — typically to move into an unmoderated caucus or take a break. Requires time and purpose to be stated.</td></tr>
+                <tr><td>⏭️ Motion to Adjourn</td><td>Ends the committee session entirely for the day. Requires a majority vote.</td></tr>
+                <tr><td>🔓 Motion to Reopen Debate</td><td>Brings a topic back onto the floor after debate was closed. Requires a second and a majority.</td></tr>
+              </tbody>
+            </table>
+          </Card>
+
+          <Card emoji="💬" title="Caucuses">
+            <div className="box highlight" style={{"marginBottom": "12px"}}>
+              <div className="box-title">🎤 Moderated Caucus</div>
+              <p>Formal but faster-paced discussion. The Chair calls on delegates one at a time for short speeches (typically 30–60 seconds each). Used to debate specific sub-topics within the main agenda. A delegate motions for a moderated caucus by stating the total time and speaking time per delegate.</p>
+            </div>
+            <div className="box green" style={{"marginBottom": "12px"}}>
+              <div className="box-title">🤝 Unmoderated Caucus</div>
+              <p>Informal networking time. Delegates leave their seats and talk freely to negotiate, build blocs, and draft resolutions. The Chair does not moderate. Motion must include a total time. This is where most of the real diplomacy happens — use it aggressively.</p>
+            </div>
+            <div className="box blue">
+              <div className="box-title">📝 Consultation of the Whole</div>
+              <p>A structured form of informal debate used in some UN-style conferences. Less common but similar to an unmoderated caucus with slightly more structure. Check your specific conference rules.</p>
+            </div>
+          </Card>
+
+          <Card emoji="📝" title="Speeches and Yields">
+            <div className="box blue" style={{"marginBottom": "12px"}}>
+              <div className="box-title">⏱️ Speakers List</div>
+              <p>The formal queue of delegates who wish to speak. Add yourself by raising your placard when the Chair asks. Each speaker gets a set time (typically 60–90 seconds). You can yield your remaining time at the end of your speech.</p>
+            </div>
+            <div className="box highlight" style={{"marginBottom": "12px"}}>
+              <div className="box-title">🔄 Yield to Another Delegate</div>
+              <p>At the end of your speech, if you have time remaining, you can yield it to a specific delegate — they then use your remaining time. Used tactically to give allies more speaking time.</p>
+            </div>
+            <div className="box green" style={{"marginBottom": "12px"}}>
+              <div className="box-title">❓ Yield to Points of Information</div>
+              <p>You open yourself to questions from other delegates after your speech. Risky if your position is weak — but powerful if you are confident. Other delegates raise their placards and the Chair selects who may question you.</p>
+            </div>
+            <div className="box green">
+              <div className="box-title">🪑 Yield to the Chair</div>
+              <p>You give your remaining time back to the Chair — no questions, no other delegate speaks. The safest option if you have nothing else to add or do not want to be questioned.</p>
+            </div>
+          </Card>
+
+          <Card emoji="📄" title="Resolution Writing" fullWidth>
+            <table className="data-table">
+              <thead><tr><th>Element</th><th>What It Is</th><th>Examples</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>🏷️ Signatories / Sponsors</td>
+                  <td>Sponsors wrote the resolution and fully support it. Signatories only want it debated — they may not vote for it.</td>
+                  <td>Iran would be a sponsor of resolutions condemning sanctions. It might be a signatory on resolutions about development financing.</td>
+                </tr>
+                <tr>
+                  <td>📌 Preambulatory Clauses</td>
+                  <td>The "whereas" statements at the top — they establish context, recall past resolutions, and acknowledge facts. They do not create action.</td>
+                  <td>Recalling, Reaffirming, Recognizing, Noting, Deeply concerned, Emphasizing, Bearing in mind, Guided by</td>
+                </tr>
+                <tr>
+                  <td>⚡ Operative Clauses</td>
+                  <td>The action items — what the committee actually decides, calls for, or urges.</td>
+                  <td>Calls upon, Urges, Encourages, Requests, Demands, Condemns, Affirms, Decides, Recommends, Invites</td>
+                </tr>
+                <tr>
+                  <td>✏️ Amendments</td>
+                  <td>Changes to a draft resolution before it is voted on. Friendly amendments are accepted by sponsors. Unfriendly amendments go to a vote.</td>
+                  <td>Opposing delegates will attempt to amend Iran's draft resolutions to add human rights language — be prepared to argue against unfriendly amendments.</td>
+                </tr>
+              </tbody>
+            </table>
+          </Card>
+
+          <Card emoji="🗺️" title="Voting Procedure">
+            <div className="box green" style={{"marginBottom": "12px"}}>
+              <div className="box-title">✅ Yes / For</div>
+              <p>You support the resolution or motion as written.</p>
+            </div>
+            <div className="box alert" style={{"marginBottom": "12px"}}>
+              <div className="box-title">❌ No / Against</div>
+              <p>You oppose the resolution or motion.</p>
+            </div>
+            <div className="box highlight" style={{"marginBottom": "12px"}}>
+              <div className="box-title">➖ Abstain</div>
+              <p>You neither support nor oppose. Abstentions count toward quorum but not toward the majority needed to pass. Iran often abstains on resolutions it disagrees with procedurally but does not want to formally oppose.</p>
+            </div>
+            <div className="box blue">
+              <div className="box-title">🔒 Right of Reply</div>
+              <p>If a delegate makes a personal attack or directly misrepresents your country's position, you may request a Right of Reply from the Chair. You get a brief response — typically 30 seconds. Use it sparingly. As Iran, expect to need this frequently.</p>
+            </div>
+          </Card>
+
+          <Card emoji="🇮🇷" title="Iran-Specific MUN Tactics" fullWidth>
+            <div className="three-col">
+              <div className="mini-card">
+                <div className="mini-card-title">🎤 Opening Speech</div>
+                <p>Lead with Iran's civilizational identity and sovereign dignity — not defensiveness. Open with a reference to the Cyrus Cylinder as the world's first human rights declaration. Frame Iran as a nation that invented human rights being lectured by states that violate them daily.</p>
+              </div>
+              <div className="mini-card">
+                <div className="mini-card-title">🤝 Bloc Building</div>
+                <p>In unmoderated caucuses, approach G-77 delegates first — particularly African and Latin American delegations. Lead with shared grievances about Western economic coercion and double standards. Build the anti-sanctions coalition first, then bring Iran's arguments into it.</p>
+              </div>
+              <div className="mini-card">
+                <div className="mini-card-title">📝 Draft Resolutions</div>
+                <p>Draft resolutions focused on development financing, the right to peaceful nuclear energy, and the illegality of unilateral coercive measures. These attract G-77 co-sponsors. Avoid drafts that require defending Iran's domestic record.</p>
+              </div>
+              <div className="mini-card">
+                <div className="mini-card-title">⚔️ Handling Attacks</div>
+                <p>When Western delegates attack Iran's human rights record, do not deny — redirect. "The delegation of Iran welcomes a consistent application of human rights standards to all Member States." Then request equal scrutiny of the attacking delegation's own record.</p>
+              </div>
+              <div className="mini-card">
+                <div className="mini-card-title">🔄 Right of Reply</div>
+                <p>Use the Right of Reply strategically — not every time, only when it genuinely advances your narrative. Overusing it makes you look defensive. Silence can be more powerful when you have already made your position clear.</p>
+              </div>
+              <div className="mini-card">
+                <div className="mini-card-title">🏆 Winning as Iran</div>
+                <p>Victory for Iran in ECOSOC is demonstrating that the multilateral system applies its rules selectively. If you can get developing nations to abstain rather than vote against Iran, and force Western delegates onto the defensive on double standards — that is a win.</p>
+              </div>
+            </div>
+          </Card>
+
+        </div>
+        </div>
+
+        {/* ── SECTION 2: LIVE INTELLIGENCE ── */}
         <div id="live-intelligence">
-        <SectionDivider emoji="🔴" title="Section 1 — Live Intelligence (Auto-Updated)" />
+        <SectionDivider emoji="🔴" title="Section 2 — Live Intelligence (Auto-Updated)" />
         <div className="main">
 
           {/* ALERT BANNER if AI generated one */}
@@ -801,11 +974,6 @@ export default function Home({ dynamic, generatedAt }) {
           <Card emoji="📰" title="Live News Feed" fullWidth>
             <NewsSection news={news} loading={newsLoading} />
           </Card>
-
-          {/* AI BRIEFING */}
-          <div className="full-width">
-            <AIBriefing briefing={briefing} loading={briefingLoading} />
-          </div>
 
         </div>
 
@@ -1058,174 +1226,29 @@ export default function Home({ dynamic, generatedAt }) {
 
         </div>
 
-        {/* ── SECTION 8: MUN PROCEDURES ── */}
-        <div id="procedures">
-        <SectionDivider emoji="📜" title="Section 8 — MUN Procedures and Terminology" />
+        {/* ── SECTION 3: AI BRIEFING ── */}
+        <div id="ai-briefing">
+        <SectionDivider emoji="🤖" title="Section 3 — AI Intelligence Briefing (Live)" />
         <div className="main">
-
-          <Card emoji="🎙️" title="Points" fullWidth>
-            <table className="data-table">
-              <thead><tr><th>Point</th><th>What It Means</th><th>When To Use It</th><th>Can Be Interrupted?</th></tr></thead>
-              <tbody>
-                <tr>
-                  <td>📢 Point of Personal Privilege</td>
-                  <td>A delegate is experiencing a personal discomfort that prevents them from fully participating — cannot hear, room too hot, microphone not working, etc.</td>
-                  <td>When you genuinely cannot hear the speaker or there is a physical issue. Not to be abused — it interrupts the speaker and the Chair will notice if used frivolously.</td>
-                  <td>Yes — can interrupt a speaker</td>
-                </tr>
-                <tr>
-                  <td>⚖️ Point of Order</td>
-                  <td>A delegate believes the Chair or another delegate has made a procedural error — the rules of procedure are not being followed correctly.</td>
-                  <td>When the Chair misapplies a rule, miscounts a vote, or the committee strays from proper procedure. Not for substantive disagreements — only procedural ones.</td>
-                  <td>Yes — can interrupt a speaker</td>
-                </tr>
-                <tr>
-                  <td>ℹ️ Point of Information (to the Chair)</td>
-                  <td>A delegate has a question about procedure directed at the Chair.</td>
-                  <td>When you are unclear about how a rule works or what the current procedure is. The Chair answers.</td>
-                  <td>No — cannot interrupt a speaker</td>
-                </tr>
-                <tr>
-                  <td>❓ Point of Information (to the Speaker)</td>
-                  <td>A delegate wishes to ask a question of the delegate currently speaking, subject to that delegate's consent.</td>
-                  <td>After a speech, if the speaker yields to points of information. You ask a direct question — usually to challenge or clarify their argument.</td>
-                  <td>No — only after the speech</td>
-                </tr>
-                <tr>
-                  <td>🔍 Point of Inquiry</td>
-                  <td>Used in some MUN conferences as an alternative name for a question directed at the Chair about procedure.</td>
-                  <td>Same as Point of Information to the Chair — varies by conference rules. Always check your specific conference's rules of procedure.</td>
-                  <td>No</td>
-                </tr>
-              </tbody>
-            </table>
-          </Card>
-
-          <Card emoji="🗳️" title="Motions">
-            <table className="data-table">
-              <thead><tr><th>Motion</th><th>What It Does</th></tr></thead>
-              <tbody>
-                <tr><td>📋 Motion to Open Debate</td><td>Formally begins debate on the agenda topic. Usually the first motion of any committee session.</td></tr>
-                <tr><td>🔇 Motion to Table / Postpone</td><td>Suspends or delays debate on the current topic. In some conferences "table" means to set aside indefinitely; in others it means to bring something forward. Always check your conference's definition.</td></tr>
-                <tr><td>🔁 Motion to Reconsider</td><td>Requests that a previously passed resolution or motion be voted on again. Requires a second and a majority vote.</td></tr>
-                <tr><td>🚪 Motion to Close Debate</td><td>Ends the speakers list and moves the committee to vote on resolutions. Requires a second and passes by a two-thirds majority in most conferences.</td></tr>
-                <tr><td>⏸️ Motion to Suspend Debate</td><td>Temporarily pauses formal debate — typically to move into an unmoderated caucus or take a break. Requires time and purpose to be stated.</td></tr>
-                <tr><td>⏭️ Motion to Adjourn</td><td>Ends the committee session entirely for the day. Requires a majority vote.</td></tr>
-                <tr><td>🔓 Motion to Reopen Debate</td><td>Brings a topic back onto the floor after debate was closed. Requires a second and a majority.</td></tr>
-              </tbody>
-            </table>
-          </Card>
-
-          <Card emoji="💬" title="Caucuses">
-            <div className="box highlight" style={{"marginBottom": "12px"}}>
-              <div className="box-title">🎤 Moderated Caucus</div>
-              <p>Formal but faster-paced discussion. The Chair calls on delegates one at a time for short speeches (typically 30–60 seconds each). Used to debate specific sub-topics within the main agenda. A delegate motions for a moderated caucus by stating the total time and speaking time per delegate.</p>
-            </div>
-            <div className="box green" style={{"marginBottom": "12px"}}>
-              <div className="box-title">🤝 Unmoderated Caucus</div>
-              <p>Informal networking time. Delegates leave their seats and talk freely to negotiate, build blocs, and draft resolutions. The Chair does not moderate. Motion must include a total time. This is where most of the real diplomacy happens — use it aggressively.</p>
-            </div>
-            <div className="box blue">
-              <div className="box-title">📝 Consultation of the Whole</div>
-              <p>A structured form of informal debate used in some UN-style conferences. Less common but similar to an unmoderated caucus with slightly more structure. Check your specific conference rules.</p>
-            </div>
-          </Card>
-
-          <Card emoji="📝" title="Speeches and Yields">
-            <div className="box blue" style={{"marginBottom": "12px"}}>
-              <div className="box-title">⏱️ Speakers List</div>
-              <p>The formal queue of delegates who wish to speak. Add yourself by raising your placard when the Chair asks. Each speaker gets a set time (typically 60–90 seconds). You can yield your remaining time at the end of your speech.</p>
-            </div>
-            <div className="box highlight" style={{"marginBottom": "12px"}}>
-              <div className="box-title">🔄 Yield to Another Delegate</div>
-              <p>At the end of your speech, if you have time remaining, you can yield it to a specific delegate — they then use your remaining time. Used tactically to give allies more speaking time.</p>
-            </div>
-            <div className="box green" style={{"marginBottom": "12px"}}>
-              <div className="box-title">❓ Yield to Points of Information</div>
-              <p>You open yourself to questions from other delegates after your speech. Risky if your position is weak — but powerful if you are confident. Other delegates raise their placards and the Chair selects who may question you.</p>
-            </div>
-            <div className="box green">
-              <div className="box-title">🪑 Yield to the Chair</div>
-              <p>You give your remaining time back to the Chair — no questions, no other delegate speaks. The safest option if you have nothing else to add or do not want to be questioned.</p>
-            </div>
-          </Card>
-
-          <Card emoji="📄" title="Resolution Writing" fullWidth>
-            <table className="data-table">
-              <thead><tr><th>Element</th><th>What It Is</th><th>Examples</th></tr></thead>
-              <tbody>
-                <tr>
-                  <td>🏷️ Signatories / Sponsors</td>
-                  <td>Sponsors wrote the resolution and fully support it. Signatories only want it debated — they may not vote for it.</td>
-                  <td>Iran would be a sponsor of resolutions condemning sanctions. It might be a signatory on resolutions about development financing.</td>
-                </tr>
-                <tr>
-                  <td>📌 Preambulatory Clauses</td>
-                  <td>The "whereas" statements at the top — they establish context, recall past resolutions, and acknowledge facts. They do not create action.</td>
-                  <td>Recalling, Reaffirming, Recognizing, Noting, Deeply concerned, Emphasizing, Bearing in mind, Guided by</td>
-                </tr>
-                <tr>
-                  <td>⚡ Operative Clauses</td>
-                  <td>The action items — what the committee actually decides, calls for, or urges. These are the binding (or recommendatory) parts of the resolution.</td>
-                  <td>Calls upon, Urges, Encourages, Requests, Demands, Condemns, Affirms, Decides, Recommends, Invites</td>
-                </tr>
-                <tr>
-                  <td>✏️ Amendments</td>
-                  <td>Changes to a draft resolution before it is voted on. Friendly amendments are accepted by sponsors. Unfriendly amendments go to a vote.</td>
-                  <td>Opposing delegates will attempt to amend Iran's draft resolutions to add human rights language — be prepared to argue against unfriendly amendments.</td>
-                </tr>
-              </tbody>
-            </table>
-          </Card>
-
-          <Card emoji="🗺️" title="Voting Procedure">
-            <div className="box green" style={{"marginBottom": "12px"}}>
-              <div className="box-title">✅ Yes / For</div>
-              <p>You support the resolution or motion as written.</p>
-            </div>
-            <div className="box alert" style={{"marginBottom": "12px"}}>
-              <div className="box-title">❌ No / Against</div>
-              <p>You oppose the resolution or motion.</p>
-            </div>
-            <div className="box highlight" style={{"marginBottom": "12px"}}>
-              <div className="box-title">➖ Abstain</div>
-              <p>You neither support nor oppose. You are present but not voting. Abstentions count toward quorum but not toward the majority needed to pass. Iran often abstains on resolutions it disagrees with procedurally but does not want to formally oppose.</p>
-            </div>
-            <div className="box blue">
-              <div className="box-title">🔒 Right of Reply</div>
-              <p>If a delegate makes a personal attack or directly misrepresents your country's position, you may request a Right of Reply from the Chair. You get a brief response — typically 30 seconds. Use it sparingly and only when genuinely warranted. As Iran, expect to need this frequently.</p>
-            </div>
-          </Card>
-
-          <Card emoji="🇮🇷" title="Iran-Specific MUN Tactics" fullWidth>
-            <div className="three-col">
-              <div className="mini-card">
-                <div className="mini-card-title">🎤 Opening Speech</div>
-                <p>Lead with Iran's civilizational identity and sovereign dignity — not defensiveness. Open with a reference to the Cyrus Cylinder as the world's first human rights declaration. Frame Iran as a nation that invented human rights being lectured by states that violate them daily. Set the tone immediately.</p>
-              </div>
-              <div className="mini-card">
-                <div className="mini-card-title">🤝 Bloc Building</div>
-                <p>In unmoderated caucuses, approach G-77 delegates first — particularly African and Latin American delegations. Lead with shared grievances about Western economic coercion and double standards. Do not lead with Iran's specific positions — build the anti-sanctions coalition first, then bring Iran's arguments into it.</p>
-              </div>
-              <div className="mini-card">
-                <div className="mini-card-title">📝 Draft Resolutions</div>
-                <p>Draft resolutions focused on development financing, the right to peaceful nuclear energy, and the illegality of unilateral coercive measures. These attract G-77 co-sponsors. Avoid drafts that require defending Iran's domestic record — keep the focus on international law and multilateral equity.</p>
-              </div>
-              <div className="mini-card">
-                <div className="mini-card-title">⚔️ Handling Attacks</div>
-                <p>When Western delegates attack Iran's human rights record, do not deny — redirect. "The delegation of Iran notes that the distinguished delegate's country has conducted X, Y, and Z without accountability in this chamber. We welcome a consistent application of human rights standards to all Member States." Then request equal scrutiny.</p>
-              </div>
-              <div className="mini-card">
-                <div className="mini-card-title">🔄 Right of Reply</div>
-                <p>As Iran, you will be attacked frequently. Use the Right of Reply strategically — not every time, only when it genuinely advances your narrative or the attack was particularly egregious. Overusing it makes you look defensive. Silence can be more powerful when you have already made your position clear.</p>
-              </div>
-              <div className="mini-card">
-                <div className="mini-card-title">🏆 Winning as Iran</div>
-                <p>Victory for Iran in ECOSOC is not passing resolutions — it is demonstrating that the multilateral system applies its rules selectively. If you can get developing nations to abstain rather than vote against Iran, if you can introduce the precedent argument on the CSW removal, and if you can force Western delegates onto the defensive on double standards — that is a win.</p>
-              </div>
-            </div>
-          </Card>
-
+          <div className="full-width">
+            <AIBriefing briefing={briefing} loading={briefingLoading} />
+          </div>
+          <div className="full-width" style={{ background: 'var(--dark)', padding: '16px 20px', borderRadius: 2, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 12, color: '#666', letterSpacing: '0.5px' }}>GENERATE BRIEFING</span>
+            <input
+              className="update-input"
+              type="password"
+              placeholder="Team password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && generateBriefing()}
+              style={{ width: 160 }}
+            />
+            <button className="update-btn" onClick={generateBriefing} disabled={briefingLoading}>
+              {briefingLoading ? '⏳ Generating...' : '🤖 Generate AI Briefing'}
+            </button>
+            {updateStatus && <span style={{ fontSize: 12, color: 'var(--light)' }}>{updateStatus}</span>}
+          </div>
         </div>
         </div>
 
