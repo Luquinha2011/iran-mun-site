@@ -809,10 +809,9 @@ function Chatbot() {
     // Convert **bold** to bold spans and bullet points
     const lines = text.split('\n')
     return lines.map((line, i) => {
-      const isBullet = line.trim().startsWith('- ') || line.trim().startsWith('• ')
-      const cleaned = line
-        .replace(/^[-•]\s+/, '')
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>’)
+      const isBullet = line.trim().startsWith('- ') || line.trim().startsWith('* ')
+      const stripped = isBullet ? line.trim().substring(2) : line
+      const html = stripped.replace(/[*][*]([^*]+)[*][*]/g, '<strong>$1</strong>')
       return (
         <div key={i} style={{
           display: 'flex',
@@ -821,7 +820,7 @@ function Chatbot() {
           paddingLeft: isBullet ? 4 : 0
         }}>
           {isBullet && <span style={{ color: 'var(--gold)', flexShrink: 0, marginTop: 1 }}>→</span>}
-          <span dangerouslySetInnerHTML={{ __html: cleaned }} />
+          <span dangerouslySetInnerHTML={{ __html: html }} />
         </div>
       )
     })
