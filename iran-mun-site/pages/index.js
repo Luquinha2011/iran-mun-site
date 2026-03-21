@@ -812,7 +812,7 @@ function Chatbot() {
       const isBullet = line.trim().startsWith('- ') || line.trim().startsWith('• ')
       const cleaned = line
         .replace(/^[-•]\s+/, '')
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>’)
       return (
         <div key={i} style={{
           display: 'flex',
@@ -1147,14 +1147,14 @@ export default function Home({ dynamic, generatedAt, user, logout }) {
                 </tr>
                 <tr>
                   <td>❓ Point of Information (to the Speaker)</td>
-                  <td>A delegate wishes to ask a question of the delegate currently speaking, subject to that delegate's consent.</td>
+                  <td>A delegate wishes to ask a question of the delegate currently speaking, subject to that delegate’s consent.</td>
                   <td>After a speech, if the speaker yields to points of information. You ask a direct question — usually to challenge or clarify their argument.</td>
                   <td>No — only after the speech</td>
                 </tr>
                 <tr>
                   <td>🔍 Point of Inquiry</td>
                   <td>Used in some MUN conferences as an alternative name for a question directed at the Chair about procedure.</td>
-                  <td>Same as Point of Information to the Chair — varies by conference rules. Always check your specific conference's rules of procedure.</td>
+                  <td>Same as Point of Information to the Chair — varies by conference rules. Always check your specific conference’s rules of procedure.</td>
                   <td>No</td>
                 </tr>
               </tbody>
@@ -1166,7 +1166,7 @@ export default function Home({ dynamic, generatedAt, user, logout }) {
               <thead><tr><th>Motion</th><th>What It Does</th></tr></thead>
               <tbody>
                 <tr><td>📋 Motion to Open Debate</td><td>Formally begins debate on the agenda topic. Usually the first motion of any committee session.</td></tr>
-                <tr><td>🔇 Motion to Table / Postpone</td><td>Suspends or delays debate on the current topic. In some conferences "table" means to set aside indefinitely; in others it means to bring something forward. Always check your conference's definition.</td></tr>
+                <tr><td>🔇 Motion to Table / Postpone</td><td>Suspends or delays debate on the current topic. In some conferences "table" means to set aside indefinitely; in others it means to bring something forward. Always check your conference’s definition.</td></tr>
                 <tr><td>🔁 Motion to Reconsider</td><td>Requests that a previously passed resolution or motion be voted on again. Requires a second and a majority vote.</td></tr>
                 <tr><td>🚪 Motion to Close Debate</td><td>Ends the speakers list and moves the committee to vote on resolutions. Requires a second and passes by a two-thirds majority in most conferences.</td></tr>
                 <tr><td>⏸️ Motion to Suspend Debate</td><td>Temporarily pauses formal debate — typically to move into an unmoderated caucus or take a break. Requires time and purpose to be stated.</td></tr>
@@ -1232,7 +1232,7 @@ export default function Home({ dynamic, generatedAt, user, logout }) {
                 <tr>
                   <td>✏️ Amendments</td>
                   <td>Changes to a draft resolution before it is voted on. Friendly amendments are accepted by sponsors. Unfriendly amendments go to a vote.</td>
-                  <td>Opposing delegates will attempt to amend Iran's draft resolutions to add human rights language — be prepared to argue against unfriendly amendments.</td>
+                  <td>Opposing delegates will attempt to amend Iran’s draft resolutions to add human rights language — be prepared to argue against unfriendly amendments.</td>
                 </tr>
               </tbody>
             </table>
@@ -1253,7 +1253,7 @@ export default function Home({ dynamic, generatedAt, user, logout }) {
             </div>
             <div className="box blue">
               <div className="box-title">🔒 Right of Reply</div>
-              <p>If a delegate makes a personal attack or directly misrepresents your country's position, you may request a Right of Reply from the Chair. You get a brief response — typically 30 seconds. Use it sparingly. As Iran, expect to need this frequently.</p>
+              <p>If a delegate makes a personal attack or directly misrepresents your country’s position, you may request a Right of Reply from the Chair. You get a brief response — typically 30 seconds. Use it sparingly. As Iran, expect to need this frequently.</p>
             </div>
           </Card>
 
@@ -1261,19 +1261,19 @@ export default function Home({ dynamic, generatedAt, user, logout }) {
             <div className="three-col">
               <div className="mini-card">
                 <div className="mini-card-title">🎤 Opening Speech</div>
-                <p>Lead with Iran's civilizational identity and sovereign dignity — not defensiveness. Open with a reference to the Cyrus Cylinder as the world's first human rights declaration. Frame Iran as a nation that invented human rights being lectured by states that violate them daily.</p>
+                <p>Lead with Iran’s civilizational identity and sovereign dignity — not defensiveness. Open with a reference to the Cyrus Cylinder as the world’s first human rights declaration. Frame Iran as a nation that invented human rights being lectured by states that violate them daily.</p>
               </div>
               <div className="mini-card">
                 <div className="mini-card-title">🤝 Bloc Building</div>
-                <p>In unmoderated caucuses, approach G-77 delegates first — particularly African and Latin American delegations. Lead with shared grievances about Western economic coercion and double standards. Build the anti-sanctions coalition first, then bring Iran's arguments into it.</p>
+                <p>In unmoderated caucuses, approach G-77 delegates first — particularly African and Latin American delegations. Lead with shared grievances about Western economic coercion and double standards. Build the anti-sanctions coalition first, then bring Iran’s arguments into it.</p>
               </div>
               <div className="mini-card">
                 <div className="mini-card-title">📝 Draft Resolutions</div>
-                <p>Draft resolutions focused on development financing, the right to peaceful nuclear energy, and the illegality of unilateral coercive measures. These attract G-77 co-sponsors. Avoid drafts that require defending Iran's domestic record.</p>
+                <p>Draft resolutions focused on development financing, the right to peaceful nuclear energy, and the illegality of unilateral coercive measures. These attract G-77 co-sponsors. Avoid drafts that require defending Iran’s domestic record.</p>
               </div>
               <div className="mini-card">
                 <div className="mini-card-title">⚔️ Handling Attacks</div>
-                <p>When Western delegates attack Iran's human rights record, do not deny — redirect. "The delegation of Iran welcomes a consistent application of human rights standards to all Member States." Then request equal scrutiny of the attacking delegation's own record.</p>
+                <p>When Western delegates attack Iran’s human rights record, do not deny — redirect. "The delegation of Iran welcomes a consistent application of human rights standards to all Member States." Then request equal scrutiny of the attacking delegation’s own record.</p>
               </div>
               <div className="mini-card">
                 <div className="mini-card-title">🔄 Right of Reply</div>
@@ -1341,7 +1341,7 @@ export default function Home({ dynamic, generatedAt, user, logout }) {
               <p>{d.sanctions?.economic_impact}</p>
             </div>
             <div className="box green" style={{ marginTop: 0 }}>
-              <div className="box-title">Iran's Legal Argument</div>
+              <div className="box-title">Iran’s Legal Argument</div>
               <p>{d.sanctions?.iran_argument}</p>
             </div>
           </Card>
@@ -1371,7 +1371,7 @@ export default function Home({ dynamic, generatedAt, user, logout }) {
               <p>{d.ecosoc_current?.latest}</p>
             </div>
             <div className="box green" style={{ marginTop: 0 }}>
-              <div className="box-title">Iran's Position</div>
+              <div className="box-title">Iran’s Position</div>
               <p>{d.ecosoc_current?.iran_position}</p>
             </div>
             {d.last_updated && (
@@ -1450,7 +1450,7 @@ export default function Home({ dynamic, generatedAt, user, logout }) {
           </Card>
           <Card emoji="⚡" title="Strategic Geography">
             <Box type="highlight" title="🚢 Strait of Hormuz">
-              Approximately 20% of the world's oil and 30% of global LNG passes through this chokepoint. Iran's ability to threaten closure is its most powerful geopolitical lever. In March 2026, attacks on Gulf energy infrastructure pushed Brent crude above $119/barrel.
+              Approximately 20% of the world’s oil and 30% of global LNG passes through this chokepoint. Iran’s ability to threaten closure is its most powerful geopolitical lever. In March 2026, attacks on Gulf energy infrastructure pushed Brent crude above $119/barrel.
             </Box>
             <InfoRow label="Oil Reserves" value="4th largest globally (~157 billion barrels)" note />
             <InfoRow label="Gas Reserves" value="2nd largest globally" note />
@@ -1462,11 +1462,11 @@ export default function Home({ dynamic, generatedAt, user, logout }) {
               <thead><tr><th>City</th><th>Population</th><th>Significance</th><th>Province</th></tr></thead>
               <tbody>
                 <tr><td>🏛️ Tehran</td><td>9.6M (metro ~17M)</td><td>Capital; financial and political hub</td><td>Tehran</td></tr>
-                <tr><td>🕌 Mashhad</td><td>3.4M</td><td>Iran's largest religious city; shrine of Imam Reza</td><td>Razavi Khorasan</td></tr>
+                <tr><td>🕌 Mashhad</td><td>3.4M</td><td>Iran’s largest religious city; shrine of Imam Reza</td><td>Razavi Khorasan</td></tr>
                 <tr><td>🌉 Isfahan</td><td>2.3M</td><td>Historic Safavid capital; UNESCO-listed Naqsh-e Jahan Square</td><td>Isfahan</td></tr>
                 <tr><td>🏔️ Tabriz</td><td>1.7M</td><td>Largest Azerbaijani-speaking city; major trade hub</td><td>East Azerbaijan</td></tr>
-                <tr><td>🌹 Shiraz</td><td>1.6M</td><td>Cultural heartland; near Persepolis; home of poets Hafez and Sa'di</td><td>Fars</td></tr>
-                <tr><td>⛽ Ahvaz</td><td>1.3M</td><td>Centre of Iran's oil industry</td><td>Khuzestan</td></tr>
+                <tr><td>🌹 Shiraz</td><td>1.6M</td><td>Cultural heartland; near Persepolis; home of poets Hafez and Sa’di</td><td>Fars</td></tr>
+                <tr><td>⛽ Ahvaz</td><td>1.3M</td><td>Centre of Iran’s oil industry</td><td>Khuzestan</td></tr>
                 <tr><td>🕍 Qom</td><td>1.2M</td><td>Most important centre of Shia Islamic scholarship</td><td>Qom</td></tr>
                 <tr><td>🏺 Yazd</td><td>530,000</td><td>UNESCO World Heritage city; ancient Zoroastrian community</td><td>Yazd</td></tr>
               </tbody>
@@ -1513,7 +1513,7 @@ export default function Home({ dynamic, generatedAt, user, logout }) {
             <InfoRow label="Executions" value="Consistently top 3 globally" note />
             <InfoRow label="Press Freedom" value="Near bottom globally; state controls most media" note />
             <Box type="alert" title="⚠️ Women — 2026">
-              Women represent 60% of natural science university students yet face mandatory hijab and restricted legal rights. Mahsa Amini's death in Sept 2022 triggered the largest protests since 1979. The January 2026 massacre killed thousands of protesters.
+              Women represent 60% of natural science university students yet face mandatory hijab and restricted legal rights. Mahsa Amini’s death in Sept 2022 triggered the largest protests since 1979. The January 2026 massacre killed thousands of protesters.
             </Box>
           </Card>
         </div>
@@ -1542,7 +1542,7 @@ export default function Home({ dynamic, generatedAt, user, logout }) {
               Controls the nuclear programme, all proxy networks, internal intelligence, and foreign covert operations. Designated a terrorist organisation by the United States.
             </Box>
             <Box type="highlight" title="🕸️ Axis of Resistance">
-              Hezbollah (Lebanon), Hamas (Gaza), Houthis (Yemen), PMF militias (Iraq). All significantly degraded since 2023. Syria's Assad fell in late 2024.
+              Hezbollah (Lebanon), Hamas (Gaza), Houthis (Yemen), PMF militias (Iraq). All significantly degraded since 2023. Syria’s Assad fell in late 2024.
             </Box>
           </Card>
         </div>
@@ -1569,7 +1569,7 @@ export default function Home({ dynamic, generatedAt, user, logout }) {
                     <th style={{width: 160}}>Position</th>
                     <th style={{width: 120}}>Institution</th>
                     <th style={{width: 100}}>Religion</th>
-                    <th>Power & Influence</th>
+                    <th>Power and Influence</th>
                     <th style={{width: 130}}>Health Status</th>
                     <th style={{width: 80}}>Power</th>
                   </tr>
@@ -1660,7 +1660,7 @@ export default function Home({ dynamic, generatedAt, user, logout }) {
           </Card>
           <Card emoji="🚫" title="The CSW Removal — Legal Analysis">
             <Box type="blue" title="🇺🇸 The Case For Removal">
-              ECOSOC has inherent authority to remove a member from a subsidiary body whose conduct is fundamentally incompatible with that body's mandate. A state that kills women for removing their hijab cannot sit on the commission charged with advancing women's rights.
+              ECOSOC has inherent authority to remove a member from a subsidiary body whose conduct is fundamentally incompatible with that body’s mandate. A state that kills women for removing their hijab cannot sit on the commission charged with advancing women’s rights.
             </Box>
             <Box type="alert" title="🇮🇷 Iran's Legal Counter">
               No explicit provision in ECOSOC's rules for mid-term removal. Iran was lawfully elected. The manoeuvre was an abuse of process. The UN Charter's sovereign equality principle prohibits precisely this kind of selective institutional action.
@@ -1674,10 +1674,10 @@ export default function Home({ dynamic, generatedAt, user, logout }) {
               Iran uses ECOSOC to articulate grievances resonating in the Global South — economic exclusion, financial sanctions, and the hypocrisy of Western states that preach development while imposing economic siege.
             </Box>
             <Box type="green" title="🤝 Coalition Building">
-              Consistently aligns with G-77 and Non-Aligned Movement. Finds allies across Africa, Latin America, and Asia who share structural grievances — even if they distance themselves from Iran's governance record.
+              Consistently aligns with G-77 and Non-Aligned Movement. Finds allies across Africa, Latin America, and Asia who share structural grievances — even if they distance themselves from Iran’s governance record.
             </Box>
             <Box type="alert" title="⚠️ Structural Weakness">
-              Iran's domestic record provides opponents with genuine grounds for action. The January 2026 massacre further eroded whatever sympathy Iran had cultivated. It can delay and delegitimise but cannot prevent accountability when Western states have the votes and will to act.
+              Iran’s domestic record provides opponents with genuine grounds for action. The January 2026 massacre further eroded whatever sympathy Iran had cultivated. It can delay and delegitimise but cannot prevent accountability when Western states have the votes and will to act.
             </Box>
           </Card>
           <Card emoji="🔗" title="Foreign Relations" fullWidth>
@@ -1688,7 +1688,7 @@ export default function Home({ dynamic, generatedAt, user, logout }) {
                 <tr><td>🇮🇱 Israel</td><td>Existential enemy</td><td>Active military conflict; Khamenei killed in opening hours of Feb 2026 strikes</td></tr>
                 <tr><td>🇨🇳 China</td><td>Strategic partner and economic lifeline</td><td>25-year cooperation agreement (2021); primary buyer of sanctioned oil; refuses UN snapback sanctions</td></tr>
                 <tr><td>🇷🇺 Russia</td><td>Tactical partner</td><td>Supplies arms; refuses snapback sanctions</td></tr>
-                <tr><td>🇸🇦 Saudi Arabia</td><td>Regional rival</td><td>China-brokered normalisation (2023); Iran's March 2026 Gulf attacks threaten this</td></tr>
+                <tr><td>🇸🇦 Saudi Arabia</td><td>Regional rival</td><td>China-brokered normalisation (2023); Iran’s March 2026 Gulf attacks threaten this</td></tr>
                 <tr><td>🇬🇧🇫🇷🇩🇪 E3 Europe</td><td>Formerly JCPOA partners</td><td>Triggered snapback sanctions; relations at historic low</td></tr>
               </tbody>
             </table>
@@ -1702,9 +1702,9 @@ export default function Home({ dynamic, generatedAt, user, logout }) {
         <SectionDivider emoji="🎤" title="Section 7 — MUN Delegate Toolkit" />
         <div className="main">
           <Card emoji="🗣️" title="Core Arguments">
-            <Box type="green" title="Argument 1 — Sovereignty">The UN Charter's principle of sovereign equality is non-negotiable. The CSW removal and the sanctions snapback both represent the weaponisation of institutional procedure by states pursuing geopolitical agendas.</Box>
+            <Box type="green" title="Argument 1 — Sovereignty">The UN Charter’s principle of sovereign equality is non-negotiable. The CSW removal and the sanctions snapback both represent the weaponisation of institutional procedure by states pursuing geopolitical agendas.</Box>
             <Box type="green" title="Argument 2 — Double Standards">No comparable accountability has been applied to states conducting illegal military operations. Challenge this body to explain the inconsistency.</Box>
-            <Box type="green" title="Argument 3 — Collective Punishment">Sanctions targeting Iran's Central Bank and severing international banking access constitute collective punishment of 92 million civilians.</Box>
+            <Box type="green" title="Argument 3 — Collective Punishment">Sanctions targeting Iran’s Central Bank and severing international banking access constitute collective punishment of 92 million civilians.</Box>
             <Box type="green" title="Argument 4 — Development Rights">Every state holds the inalienable right to peaceful nuclear energy. The IAEA has not confirmed the existence of any weapons programme.</Box>
           </Card>
           <Card emoji="🧭" title="Strategic Notes">
