@@ -347,6 +347,171 @@ function useSearch() {
   return { query, setQuery, highlights, current, doSearch, clearMarks, jump, rootRef }
 }
 
+// ─── CHATBOT ─────────────────────────────────────────────────────────────────
+
+const SUGGESTED_QUESTIONS = [
+  "What are Iran's strongest arguments in ECOSOC?",
+  "How do I respond to attacks on Iran's human rights record?",
+  "Explain the JCPOA snapback mechanism",
+  "What happened to Khamenei?",
+  "How do I write a resolution as Iran?",
+  "What is a Point of Order?",
+  "Who are Iran's allies in the UN?",
+  "What is the Axis of Resistance?",
+]
+
+function Chatbot() {
+  const [open, setOpen] = useState(false)
+  const [messages, setMessages] = useState([
+    {
+      role: 'assistant',
+      content: "Hello! I'm your Iran MUN research assistant. I know everything about Iran's position at ECOSOC, MUN procedures, and current events. What do you need help with?"
+    }
+  ])
+  const [input, setInput] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [showSuggestions, setShowSuggestions] = useState(true)
+  const messagesEndRef = useRef(null)
+
+  useEffect(() => {
+    if (open && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [messages, open])
+
+  const sendMessage = async (text) => {
+    const userText = text || input.trim()
+    if (!userText || loading) return
+
+    setShowSuggestions(false)
+    setInput('')
+    setLoading(true)
+
+    const newMessages = [...messages, { role: 'user', content: userText }]
+    setMessages(newMessages)
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: newMessages })
+      })
+      const data = await res.json()
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: data.reply || data.error || 'Something went wrong.'
+      }])
+    } catch {
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: 'Connection error. Please try again.'
+      }])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const formatMessage = (text) => {
+    // Convert **bold** to bold spans and bullet points
+    const lines = text.split('\n')
+    return lines.map((line, i) => {
+      const isBullet = line.trim().startsWith('- ') || line.trim().startsWith('• ')
+      const cleaned = line
+        .replace(/^[-•]\s+/, '')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      return (
+        <div key={i} style={{
+          display: 'flex',
+          gap: isBullet ? 8 : 0,
+          marginBottom: line.trim() ? 4 : 2,
+          paddingLeft: isBullet ? 4 : 0
+        }}>
+          {isBullet && <span style={{ color: 'var(--gold)', flexShrink: 0, marginTop: 1 }}>→</span>}
+          <span dangerouslySetInnerHTML={{ __html: cleaned }} />
+        </div>
+      )
+    })
+  }
+
+  return (
+    <>
+      {/* FLOATING BUTTON */}
+      <button
+        className="chat-fab"
+        onClick={() => setOpen(o => !o)}
+        title="Ask Iran MUN Assistant"
+      >
+        {open ? '✕' : '💬'}
+        {!open && <span className="chat-fab-label">MUN Assistant</span>}
+      </button>
+
+      {/* CHAT WINDOW */}
+      {open && (
+        <div className="chat-window">
+          <div className="chat-header">
+            <div>
+              <div className="chat-header-title">🇮🇷 Iran MUN Assistant</div>
+              <div className="chat-header-sub">Powered by Groq AI — Ask me anything</div>
+            </div>
+            <button className="chat-close" onClick={() => setOpen(false)}>✕</button>
+          </div>
+
+          <div className="chat-messages">
+            {messages.map((msg, i) => (
+              <div key={i} className={`chat-msg ${msg.role}`}>
+                {msg.role === 'assistant' && (
+                  <div className="chat-avatar">🤖</div>
+                )}
+                <div className="chat-bubble">
+                  {formatMessage(msg.content)}
+                </div>
+              </div>
+            ))}
+            {loading && (
+              <div className="chat-msg assistant">
+                <div className="chat-avatar">🤖</div>
+                <div className="chat-bubble chat-typing">
+                  <span></span><span></span><span></span>
+                </div>
+              </div>
+            )}
+            {showSuggestions && (
+              <div className="chat-suggestions">
+                <div className="chat-suggestions-label">Suggested questions:</div>
+                {SUGGESTED_QUESTIONS.map((q, i) => (
+                  <button key={i} className="chat-suggestion" onClick={() => sendMessage(q)}>
+                    {q}
+                  </button>
+                ))}
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          <div className="chat-input-row">
+            <input
+              className="chat-input"
+              type="text"
+              placeholder="Ask about Iran, ECOSOC, MUN procedures..."
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && sendMessage()}
+              disabled={loading}
+            />
+            <button
+              className="chat-send"
+              onClick={() => sendMessage()}
+              disabled={loading || !input.trim()}
+            >
+              ➤
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
 // ─── NAV BAR ─────────────────────────────────────────────────────────────────
 
 function NavBar() {
@@ -481,6 +646,9 @@ export default function Home({ dynamic, generatedAt }) {
       </Head>
 
       <div ref={rootRef}>
+
+        {/* CHATBOT */}
+        <Chatbot />
 
         {/* HEADER */}
         <div className="header">
