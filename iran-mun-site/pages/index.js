@@ -563,8 +563,15 @@ function NavBar() {
 
 // ─── MAIN PAGE ───────────────────────────────────────────────────────────────
 
-export default function Home({ dynamic, generatedAt }) {
+export default function Home({ dynamic, generatedAt, user, logout }) {
   const d = dynamic || DEFAULT_DYNAMIC
+
+  // Role checks
+  const isAdmin = user?.role === 'admin'
+  const isDelegate = user?.role === 'delegate' || isAdmin
+  const canChat = isDelegate
+  const canBriefing = isAdmin
+  const canUpdateAll = isAdmin
 
   const [news, setNews] = useState([])
   const [newsLoading, setNewsLoading] = useState(false)
@@ -648,8 +655,8 @@ export default function Home({ dynamic, generatedAt }) {
 
       <div ref={rootRef}>
 
-        {/* CHATBOT */}
-        <Chatbot />
+        {/* CHATBOT — delegate and admin only */}
+        {canChat && <Chatbot />}
 
         {/* HEADER */}
         <div className="header">
@@ -682,6 +689,17 @@ export default function Home({ dynamic, generatedAt }) {
 
         {/* NAV BAR */}
         <NavBar />
+
+        {/* USER BAR */}
+        {user && (
+          <div className="user-bar">
+            <span className="user-bar-name">
+              👤 {user.name || user.username}
+              <span className={`user-role-badge role-${user.role}`}>{user.role}</span>
+            </span>
+            <button className="user-logout" onClick={logout}>Sign Out</button>
+          </div>
+        )}
 
         {/* SEARCH BAR */}
         <div className="search-bar">
@@ -975,31 +993,48 @@ export default function Home({ dynamic, generatedAt }) {
             <NewsSection news={news} loading={newsLoading} />
           </Card>
 
+          {/* AI BRIEFING — admin only */}
+          {canBriefing ? (
+            <div className="full-width">
+              <AIBriefing briefing={briefing} loading={briefingLoading} />
+            </div>
+          ) : (
+            <div className="full-width">
+              <div className="access-blocked">
+                🔒 AI Intelligence Briefing is available to <strong>Admin</strong> users only.
+              </div>
+            </div>
+          )}
+
         </div>
 
-        {/* UPDATE PANEL */}
+        {/* UPDATE PANEL — role based */}
         <div className="update-panel">
           <span className="update-label">TEAM CONTROLS</span>
           <button className="update-btn" onClick={fetchNews} disabled={newsLoading}>
             {newsLoading ? '...' : '🔄 Refresh News'}
           </button>
-          <input
-            className="update-input" type="password"
-            placeholder="Team password" value={password}
-            onChange={e => setPassword(e.target.value)}
-            style={{ width: 160 }}
-          />
-          <button className="update-btn" onClick={generateBriefing} disabled={briefingLoading}>
-            {briefingLoading ? '...' : '🤖 AI Briefing'}
-          </button>
-          <button
-            className="update-btn"
-            onClick={updateAllSections}
-            disabled={isUpdating}
-            style={{ background: '#8e44ad' }}
-          >
-            {isUpdating ? '⏳ Updating...' : '⚡ Update All Sections'}
-          </button>
+          {canBriefing && (
+            <>
+              <input
+                className="update-input" type="password"
+                placeholder="Team password" value={password}
+                onChange={e => setPassword(e.target.value)}
+                style={{ width: 160 }}
+              />
+              <button className="update-btn" onClick={generateBriefing} disabled={briefingLoading}>
+                {briefingLoading ? '...' : '🤖 AI Briefing'}
+              </button>
+              <button
+                className="update-btn"
+                onClick={updateAllSections}
+                disabled={isUpdating}
+                style={{ background: '#8e44ad' }}
+              >
+                {isUpdating ? '⏳ Updating...' : '⚡ Update All Sections'}
+              </button>
+            </>
+          )}
           {updateStatus && <span className="update-status">{updateStatus}</span>}
           <span className="fetched-at">Auto-updates daily at 6:00 AM UTC</span>
         </div>
