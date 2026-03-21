@@ -505,3 +505,56 @@ mark.sh.active { background: var(--gold); color: var(--dark); }
 .briefing-box { padding: 16px 18px; }
 .briefing-header { padding: 18px 24px; }
 .briefing-header h2 { font-size: 18px; }
+
+/* USER BAR */
+.user-bar {
+  background: #111;
+  border-bottom: 1px solid #222;
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+.user-bar-name {
+  color: rgba(255,255,255,0.5);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.user-role-badge {
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.role-admin { background: #c9a84c; color: #1a1a1a; }
+.role-delegate { background: #1a5c38; color: white; }
+.role-viewer { background: #333; color: rgba(255,255,255,0.6); }
+.user-logout {
+  background: none;
+  border: 1px solid #333;
+  color: rgba(255,255,255,0.4);
+  padding: 4px 12px;
+  border-radius: 3px;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: 'Source Sans 3', sans-serif;
+  transition: all 0.15s;
+}
+.user-logout:hover { border-color: var(--red); color: #ff6b6b; }
+
+/* ACCESS BLOCKED */
+.access-blocked {
+  background: #1a1a1a;
+  border: 1px dashed #333;
+  border-radius: 4px;
+  padding: 20px 24px;
+  color: rgba(255,255,255,0.3);
+  font-size: 13px;
+  text-align: center;
+  margin: 4px 0;
+}
+.access-blocked strong { color: var(--gold); }
