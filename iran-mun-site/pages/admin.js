@@ -1,0 +1,219 @@
+// pages/admin.js — Admin Panel (admin role only)
+import { useState, useEffect } from 'react'
+import Head from 'next/head'
+import { useRouter } from 'next/router'
+
+export default function AdminPanel({ user, logout }) {
+  const router = useRouter()
+  const [users, setUsers] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [actionStatus, setActionStatus] = useState('')
+  const [filter, setFilter] = useState('all')
+  const [search, setSearch] = useState('')
+
+  useEffect(() => {
+    if (!user) return
+    if (user.role !== 'admin') { router.push('/'); return }
+    fetchUsers()
+  }, [user])
+
+  const fetchUsers = async () => {
+    setLoading(true)
+    try {
+      const token = localStorage.getItem('mun_token')
+      const res = await fetch('/api/admin-users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+      })
+      const data = await res.json()
+      if (data.users) setUsers(data.users)
+    } catch { setActionStatus('Failed to load users.') }
+    finally { setLoading(false) }
+  }
+
+  const toggleBlock = async (username, currentlyBlocked) => {
+    setActionStatus(`${currentlyBlocked ? 'Unblocking' : 'Blocking'} ${username}...`)
+    try {
+      const token = localStorage.getItem('mun_token')
+      const res = await fetch('/api/admin-block', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, username, blocked: !currentlyBlocked })
+      })
+      const data = await res.json()
+      if (data.success) {
+        setUsers(prev => prev.map(u => u.username === username ? { ...u, blocked: !currentlyBlocked } : u))
+        setActionStatus(`${username} has been ${!currentlyBlocked ? 'blocked' : 'unblocked'}.`)
+      } else {
+        setActionStatus(data.error || 'Action failed.')
+      }
+    } catch { setActionStatus('Request failed.') }
+  }
+
+  const ROLE_COLORS = { admin: '#c9a84c', plus: '#009EDB', basic: '#555' }
+  const ROLE_LABELS = { admin: 'Admin', plus: 'Plus', basic: 'Basic' }
+
+  const filteredUsers = users.filter(u => {
+    if (filter !== 'all' && u.role !== filter) return false
+    if (search && !u.username.toLowerCase().includes(search.toLowerCase()) && !u.name.toLowerCase().includes(search.toLowerCase())) return false
+    return true
+  })
+
+  const stats = {
+    total: users.length,
+    admin: users.filter(u => u.role === 'admin').length,
+    plus: users.filter(u => u.role === 'plus').length,
+    basic: users.filter(u => u.role === 'basic').length,
+    blocked: users.filter(u => u.blocked).length,
+  }
+
+  const s = {
+    page: { minHeight: '100vh', background: '#0a1628', fontFamily: "'Source Sans 3', sans-serif", color: 'white' },
+    header: { background: 'linear-gradient(135deg, #003a6b, #005f8e)', padding: '24px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.08)' },
+    title: { fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 900 },
+    content: { maxWidth: 1100, margin: '0 auto', padding: '28px 24px' },
+    card: { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: 20, marginBottom: 20 },
+    statCard: { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: 16, textAlign: 'center' },
+    label: { fontSize: 10, color: 'rgba(255,255,255,0.4)', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 4 },
+    value: { fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 700, color: '#009EDB' },
+    table: { width: '100%', borderCollapse: 'collapse', fontSize: 13 },
+    th: { padding: '10px 14px', textAlign: 'left', fontSize: 10, letterSpacing: 1, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.08)' },
+    td: { padding: '10px 14px', borderBottom: '1px solid rgba(255,255,255,0.05)', verticalAlign: 'middle' },
+    input: { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'white', padding: '8px 14px', borderRadius: 6, fontSize: 13, outline: 'none', fontFamily: "'Source Sans 3', sans-serif" },
+    filterBtn: (active) => ({ background: active ? '#009EDB' : 'rgba(255,255,255,0.06)', border: '1px solid ' + (active ? '#009EDB' : 'rgba(255,255,255,0.12)'), color: active ? 'white' : 'rgba(255,255,255,0.5)', padding: '6px 14px', borderRadius: 6, fontSize: 12, cursor: 'pointer', fontFamily: "'Source Sans 3', sans-serif", fontWeight: 600 }),
+    blockBtn: (blocked) => ({ background: blocked ? 'rgba(39,174,96,0.15)' : 'rgba(192,57,43,0.15)', border: '1px solid ' + (blocked ? 'rgba(39,174,96,0.4)' : 'rgba(192,57,43,0.4)'), color: blocked ? '#2ecc71' : '#e74c3c', padding: '5px 14px', borderRadius: 5, fontSize: 12, cursor: 'pointer', fontWeight: 700, fontFamily: "'Source Sans 3', sans-serif", whiteSpace: 'nowrap' }),
+  }
+
+  if (!user || user.role !== 'admin') return null
+
+  return (
+    <>
+      <Head><title>Admin Panel — MUN Toolkit</title></Head>
+      <div style={s.page}>
+        <div style={s.header}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <span style={{ fontSize: 28 }}>🇺🇳</span>
+            <div>
+              <div style={s.title}>MUN Toolkit — Admin Panel</div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>User Management · Account Control</div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <button onClick={() => router.push('/')} style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.7)', padding: '7px 16px', borderRadius: 6, fontSize: 13, cursor: 'pointer', fontFamily: "'Source Sans 3', sans-serif" }}>← MUN Toolkit</button>
+            <button onClick={logout} style={{ background: 'rgba(192,57,43,0.2)', border: '1px solid rgba(192,57,43,0.4)', color: '#ff6b6b', padding: '7px 16px', borderRadius: 6, fontSize: 13, cursor: 'pointer', fontFamily: "'Source Sans 3', sans-serif" }}>Sign Out</button>
+          </div>
+        </div>
+
+        <div style={s.content}>
+
+          {/* STATS */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: 24 }}>
+            {[
+              { label: 'Total Users', value: stats.total, color: '#009EDB' },
+              { label: 'Admin', value: stats.admin, color: '#c9a84c' },
+              { label: 'Plus', value: stats.plus, color: '#009EDB' },
+              { label: 'Basic', value: stats.basic, color: '#888' },
+              { label: 'Blocked', value: stats.blocked, color: '#e74c3c' },
+            ].map(({ label, value, color }) => (
+              <div key={label} style={s.statCard}>
+                <div style={s.label}>{label}</div>
+                <div style={{ ...s.value, color }}>{value}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* STATUS MESSAGE */}
+          {actionStatus && (
+            <div style={{ background: 'rgba(0,158,219,0.1)', border: '1px solid rgba(0,158,219,0.3)', color: '#7dd4f8', padding: '10px 16px', borderRadius: 6, marginBottom: 16, fontSize: 13 }}>
+              {actionStatus}
+            </div>
+          )}
+
+          {/* USER TABLE */}
+          <div style={s.card}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.7)', letterSpacing: 0.5 }}>All Users ({filteredUsers.length})</div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                <input style={{ ...s.input, width: 180 }} placeholder="Search username..." value={search} onChange={e => setSearch(e.target.value)} />
+                {['all', 'admin', 'plus', 'basic'].map(f => (
+                  <button key={f} style={s.filterBtn(filter === f)} onClick={() => setFilter(f)}>{f.charAt(0).toUpperCase() + f.slice(1)}</button>
+                ))}
+                <button onClick={fetchUsers} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.5)', padding: '6px 14px', borderRadius: 6, fontSize: 12, cursor: 'pointer', fontFamily: "'Source Sans 3', sans-serif" }}>↻ Refresh</button>
+              </div>
+            </div>
+
+            {loading ? (
+              <div style={{ textAlign: 'center', padding: 40, color: 'rgba(255,255,255,0.3)' }}>Loading users...</div>
+            ) : (
+              <table style={s.table}>
+                <thead>
+                  <tr>
+                    <th style={s.th}>Username</th>
+                    <th style={s.th}>Name</th>
+                    <th style={s.th}>Role</th>
+                    <th style={s.th}>Access</th>
+                    <th style={s.th}>Status</th>
+                    <th style={s.th}>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredUsers.map(u => (
+                    <tr key={u.username} style={{ opacity: u.blocked ? 0.6 : 1 }}>
+                      <td style={s.td}><span style={{ fontFamily: 'monospace', fontSize: 13, color: 'rgba(255,255,255,0.8)' }}>{u.username}</span></td>
+                      <td style={s.td}><span style={{ color: 'rgba(255,255,255,0.6)' }}>{u.name}</span></td>
+                      <td style={s.td}>
+                        <span style={{ background: ROLE_COLORS[u.role] + '22', border: `1px solid ${ROLE_COLORS[u.role]}44`, color: ROLE_COLORS[u.role], padding: '2px 10px', borderRadius: 4, fontSize: 11, fontWeight: 700, letterSpacing: 0.5 }}>
+                          {ROLE_LABELS[u.role]}
+                        </span>
+                      </td>
+                      <td style={s.td}>
+                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>
+                          {u.role === 'admin' && '✅ All pages · AI features · Admin panel'}
+                          {u.role === 'plus' && '✅ Iran · China · AI briefing · Chatbot'}
+                          {u.role === 'basic' && '✅ Iran · China · Read only'}
+                        </div>
+                      </td>
+                      <td style={s.td}>
+                        <span style={{ color: u.blocked ? '#e74c3c' : '#2ecc71', fontWeight: 700, fontSize: 12 }}>
+                          {u.blocked ? '🔒 Blocked' : '✅ Active'}
+                        </span>
+                      </td>
+                      <td style={s.td}>
+                        {u.role !== 'admin' ? (
+                          <button style={s.blockBtn(u.blocked)} onClick={() => toggleBlock(u.username, u.blocked)}>
+                            {u.blocked ? 'Unblock' : 'Block'}
+                          </button>
+                        ) : (
+                          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>Protected</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+
+          {/* ACCESS GUIDE */}
+          <div style={s.card}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 14 }}>Access Level Guide</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+              {[
+                { role: 'Admin', color: '#c9a84c', items: ['MUN Toolkit home page', 'Iran research page', 'China research page', 'AI briefing (no password)', 'AI chatbot', 'Update All Sections', 'Admin panel — block/unblock accounts'] },
+                { role: 'Plus', color: '#009EDB', items: ['MUN Toolkit home page', 'Iran research page', 'China research page', 'AI briefing (no password)', 'AI chatbot'] },
+                { role: 'Basic', color: '#555', items: ['MUN Toolkit home page', 'Iran research page — read only', 'China research page — read only', 'No AI features'] },
+              ].map(({ role, color, items }) => (
+                <div key={role} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${color}33`, borderRadius: 6, padding: 14 }}>
+                  <div style={{ color, fontWeight: 700, fontSize: 13, marginBottom: 10 }}>{role}</div>
+                  {items.map(item => <div key={item} style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 4, paddingLeft: 8, borderLeft: `2px solid ${color}44` }}>{item}</div>)}
+                </div>
+              ))}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </>
+  )
+}
