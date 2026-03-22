@@ -295,8 +295,36 @@ export default function Home({ user, logout }) {
                   </div>
                 </div>
               </div>
+              <div
+                onClick={() => (user?.role === 'viewer') ? null : router.push('/china')}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 20,
+                  padding: 20, border: '1px solid #e8d8d8', borderRadius: 4,
+                  background: '#fff8f8', cursor: user?.role === 'viewer' ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.15s', maxWidth: 500, marginTop: 12,
+                  opacity: user?.role === 'viewer' ? 0.6 : 1,
+                }}
+              >
+                <div style={{ fontSize: 48 }}>🇨🇳</div>
+                <div>
+                  <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700 }}>People's Republic of China</div>
+                  <div style={{ fontSize: 12, color: '#888', margin: '4px 0' }}>ECOSOC Committee · March 2026</div>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
+                    {['Live Intel', 'Power Figures', 'Taiwan Analysis', 'Xinjiang Briefing', 'AI Chatbot'].map(tag => (
+                      <span key={tag} style={{ background: '#fde8e8', color: '#cc0000', padding: '2px 8px', borderRadius: 3, fontSize: 11, fontWeight: 600 }}>{tag}</span>
+                    ))}
+                  </div>
+                  <div style={{ marginTop: 12 }}>
+                    {user?.role === 'viewer' ? (
+                      <span style={{ background: '#f0f0f0', color: '#888', padding: '6px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>🔒 Delegate Access Required</span>
+                    ) : (
+                      <span style={{ background: '#cc0000', color: 'white', padding: '6px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>→ Open China Research Page</span>
+                    )}
+                  </div>
+                </div>
+              </div>
               <div style={{ marginTop: 14, padding: 14, background: '#f8fafc', border: '1px dashed #dde3ea', borderRadius: 4, fontSize: 12, color: '#999', fontStyle: 'italic' }}>
-                More country pages coming soon. Contact admin to request a country.
+                More country pages coming soon.
               </div>
             </div>
           </div>
