@@ -1,52 +1,4 @@
-// pages/admin.js — Admin Panel (admin role only)
-Here are both files in full:
-
----
-
-**`pages/api/admin-delete.js`** — create this as a new file:
-
-```js
-// pages/api/admin-delete.js
-import { USERS } from './auth'
-import { Redis } from '@upstash/redis'
-
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-})
-
-export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).end()
-  const { token, username } = req.body
-
-  try {
-    const decoded = Buffer.from(token, 'base64').toString('utf8')
-    const [, adminRole] = decoded.split(':')
-    if (adminRole !== 'admin') return res.status(403).json({ error: 'Admin only' })
-  } catch {
-    return res.status(401).json({ error: 'Invalid token' })
-  }
-
-  if (username === 'admin') {
-    return res.status(403).json({ error: 'Cannot delete the main admin account' })
-  }
-
-  const isHardcoded = USERS.find(u => u.username === username)
-  if (isHardcoded) {
-    return res.status(403).json({ error: 'Cannot delete hardcoded accounts — use block instead' })
-  }
-
-  const dynamicUsers = (await redis.get('dynamicUsers')) || []
-  const filtered = dynamicUsers.filter(u => u.username !== username)
-  await redis.set('dynamicUsers', filtered)
-
-  return res.status(200).json({ success: true })
-}
-```
-
----
-
-**`pages/admin.js`** — full file:
+Here is the complete `pages/admin.js` — copy everything from the very first character:
 
 ```jsx
 // pages/admin.js — Admin Panel (admin role only)
@@ -161,7 +113,6 @@ export default function AdminPanel({ user, logout }) {
       <div style={s.page}>
         {BADGE}
 
-        {/* HEADER */}
         <div style={s.header}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <span style={{ fontSize: 28 }}>🇺🇳</span>
@@ -178,7 +129,6 @@ export default function AdminPanel({ user, logout }) {
 
         <div style={s.content}>
 
-          {/* STATS */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: 24 }}>
             {[
               { label: 'Total Users', value: stats.total, color: '#009EDB' },
@@ -194,7 +144,6 @@ export default function AdminPanel({ user, logout }) {
             ))}
           </div>
 
-          {/* STATUS MESSAGE */}
           {actionStatus && (
             <div style={{ background: 'rgba(0,158,219,0.1)', border: '1px solid rgba(0,158,219,0.3)', color: '#7dd4f8', padding: '10px 16px', borderRadius: 6, marginBottom: 16, fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span>{actionStatus}</span>
@@ -202,7 +151,6 @@ export default function AdminPanel({ user, logout }) {
             </div>
           )}
 
-          {/* USER TABLE */}
           <div style={s.card}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.7)', letterSpacing: 0.5 }}>All Users ({filteredUsers.length})</div>
@@ -264,7 +212,6 @@ export default function AdminPanel({ user, logout }) {
             )}
           </div>
 
-          {/* CREATE ACCOUNT */}
           <div style={s.card}>
             <div style={s.sectionTitle}>➕ Create New Account</div>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'flex-end' }}>
@@ -303,7 +250,6 @@ export default function AdminPanel({ user, logout }) {
             </div>
           </div>
 
-          {/* EDIT ACCOUNT */}
           <div style={s.card}>
             <div style={s.sectionTitle}>✏️ Edit Account — Change Username / Name / Password</div>
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginBottom: 12, fontStyle: 'italic' }}>Fill in only the fields you want to change. Leave others blank.</div>
@@ -337,7 +283,6 @@ export default function AdminPanel({ user, logout }) {
             </div>
           </div>
 
-          {/* ACCESS GUIDE */}
           <div style={s.card}>
             <div style={s.sectionTitle}>Access Level Guide</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
@@ -360,5 +305,3 @@ export default function AdminPanel({ user, logout }) {
   )
 }
 ```
-
-Two files to update on GitHub — create `pages/api/admin-delete.js` as a new file, and replace `pages/admin.js` entirely with the code above!
