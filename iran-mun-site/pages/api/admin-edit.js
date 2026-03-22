@@ -1,4 +1,6 @@
 // pages/api/admin-edit.js
+import { USERS } from './auth'
+
 if (!global.renamedUsers) global.renamedUsers = {}
 if (!global.dynamicUsers) global.dynamicUsers = []
 
@@ -14,22 +16,50 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Invalid token' })
   }
 
-  if (!username) return res.status(400).json({ error: 'Username is required' })
+  if (!username) return res.status(400).json({ error: 'Current username is required' })
+  if (!newUsername && !newName && !newPassword) {
+    return res.status(400).json({ error: 'Provide at least one field to change' })
+  }
 
-  // Check if it's a dynamic user — edit in place
-  const dynUser = global.dynamicUsers.find(u => u.username.toLowerCase() === username.toLowerCase())
-  if (dynUser) {
-    if (newUsername) dynUser.username = newUsername
-    if (newName) dynUser.name = newName
-    if (newPassword) dynUser.password = newPassword
+  // Check if the new username is already taken
+  if (newUsername) {
+    const allUsers = [...USERS, ...global.dynamicUsers]
+    const taken = allUsers.find(u => {
+      const effective = (global.renamedUsers[u.username]?.username) || u.username
+      return effective.toLowerCase() === newUsername.toLowerCase() && u.username.toLowerCase() !== username.toLowerCase()
+    })
+    if (taken) return res.status(400).json({ error: `Username "${newUsername}" is already taken` })
+  }
+
+  // Find the original username key — needed because the table shows the display name
+  // The user might type the *current display name* which may already be a renamed value
+  // So we search both original and overridden usernames
+  const allUsers = [...USERS, ...global.dynamicUsers]
+
+  // Try to find by current effective username (post-rename)
+  const match = allUsers.find(u => {
+    const effective = (global.renamedUsers[u.username]?.username) || u.username
+    return effective.toLowerCase() === username.toLowerCase()
+  })
+
+  if (!match) return res.status(404).json({ error: `User "${username}" not found` })
+
+  const originalKey = match.username
+
+  // If it's a dynamic user, edit in place directly
+  const dynIndex = global.dynamicUsers.findIndex(u => u.username === originalKey)
+  if (dynIndex !== -1) {
+    if (newUsername) global.dynamicUsers[dynIndex].username = newUsername
+    if (newName) global.dynamicUsers[dynIndex].name = newName
+    if (newPassword) global.dynamicUsers[dynIndex].password = newPassword
     return res.status(200).json({ success: true })
   }
 
-  // Otherwise store overrides for hardcoded users
-  if (!global.renamedUsers[username]) global.renamedUsers[username] = {}
-  if (newUsername) global.renamedUsers[username].username = newUsername
-  if (newName) global.renamedUsers[username].name = newName
-  if (newPassword) global.renamedUsers[username].password = newPassword
+  // For hardcoded users, store overrides
+  if (!global.renamedUsers[originalKey]) global.renamedUsers[originalKey] = {}
+  if (newUsername) global.renamedUsers[originalKey].username = newUsername
+  if (newName) global.renamedUsers[originalKey].name = newName
+  if (newPassword) global.renamedUsers[originalKey].password = newPassword
 
   return res.status(200).json({ success: true })
 }
