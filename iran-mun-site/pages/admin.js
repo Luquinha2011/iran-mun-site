@@ -1,9 +1,9 @@
-// pages/admin.js — Admin Panel (admin role only)
+// pages/admin.js — Premium Admin Panel
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 
-const PROTECTED_ADMIN = 'admin' // 👈 change if needed
+const PROTECTED_ADMIN = 'luquinha'
 
 export default function AdminPanel({ user, logout }) {
   const router = useRouter()
@@ -44,7 +44,6 @@ export default function AdminPanel({ user, logout }) {
       setActionStatus('❌ Cannot modify main admin')
       return
     }
-
     const token = localStorage.getItem('mun_token')
     await fetch('/api/admin-block', {
       method:'POST',
@@ -59,7 +58,6 @@ export default function AdminPanel({ user, logout }) {
       setActionStatus('❌ Cannot delete main admin')
       return
     }
-
     if (!confirm(`Delete "${username}"?`)) return
 
     const token = localStorage.getItem('mun_token')
@@ -76,14 +74,12 @@ export default function AdminPanel({ user, logout }) {
       setActionStatus('⚠️ Username & password required')
       return
     }
-
     const token = localStorage.getItem('mun_token')
     await fetch('/api/admin-create', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({ token, ...createForm })
     })
-
     setCreateForm({ username:'', password:'', role:'basic', name:'' })
     fetchUsers()
   }
@@ -93,19 +89,16 @@ export default function AdminPanel({ user, logout }) {
       setActionStatus('⚠️ Enter current username')
       return
     }
-
     if (editForm.username === PROTECTED_ADMIN) {
       setActionStatus('❌ Cannot edit main admin')
       return
     }
-
     const token = localStorage.getItem('mun_token')
     await fetch('/api/admin-edit', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({ token, ...editForm })
     })
-
     setEditForm({ username:'', newUsername:'', newName:'', newPassword:'' })
     fetchUsers()
   }
@@ -119,11 +112,11 @@ export default function AdminPanel({ user, logout }) {
   const ROLE_COLORS = {
     admin: '#c9a84c',
     plus: '#009EDB',
-    basic: '#555'
+    basic: '#888'
   }
 
   const s = {
-    page: {
+    page:{
       minHeight:'100vh',
       background:'#0a1628',
       color:'white',
@@ -131,22 +124,29 @@ export default function AdminPanel({ user, logout }) {
     },
     header:{
       background:'linear-gradient(135deg,#003a6b,#005f8e)',
-      padding:'24px 32px',
+      padding:'28px 36px',
       display:'flex',
       justifyContent:'space-between',
-      alignItems:'center'
+      alignItems:'center',
+      borderBottom:'1px solid rgba(255,255,255,0.08)'
+    },
+    title:{
+      fontSize:26,
+      fontWeight:900,
+      letterSpacing:0.5
     },
     content:{
-      maxWidth:1100,
+      maxWidth:1150,
       margin:'0 auto',
-      padding:24
+      padding:'30px 24px'
     },
     card:{
       background:'rgba(255,255,255,0.04)',
+      backdropFilter:'blur(10px)',
       border:'1px solid rgba(255,255,255,0.08)',
-      borderRadius:8,
-      padding:20,
-      marginBottom:20
+      borderRadius:10,
+      padding:22,
+      marginBottom:22
     },
     input:{
       background:'rgba(255,255,255,0.06)',
@@ -159,13 +159,23 @@ export default function AdminPanel({ user, logout }) {
     btn:{
       padding:'6px 14px',
       borderRadius:6,
-      border:'none',
+      border:'1px solid rgba(255,255,255,0.15)',
+      background:'rgba(255,255,255,0.05)',
+      color:'white',
       cursor:'pointer',
       fontWeight:600
     },
     table:{ width:'100%', borderCollapse:'collapse' },
-    th:{ padding:10, textAlign:'left', fontSize:12, opacity:0.6 },
-    td:{ padding:10, borderTop:'1px solid rgba(255,255,255,0.05)' }
+    th:{
+      padding:'10px 14px',
+      fontSize:11,
+      opacity:0.5,
+      textTransform:'uppercase'
+    },
+    td:{
+      padding:'12px 14px',
+      borderTop:'1px solid rgba(255,255,255,0.05)'
+    }
   }
 
   if (!user || user.role !== 'admin') return null
@@ -176,25 +186,29 @@ export default function AdminPanel({ user, logout }) {
 
       <div style={s.page}>
         <div style={s.header}>
-          <h2>🇺🇳 MUN Toolkit — Admin Panel</h2>
+          <div style={s.title}>🇺🇳 MUN Toolkit — Admin Panel</div>
           <button onClick={logout} style={s.btn}>Sign Out</button>
         </div>
 
         <div style={s.content}>
 
           {actionStatus && (
-            <div style={{marginBottom:15, opacity:0.8}}>
+            <div style={{marginBottom:16, opacity:0.8}}>
               {actionStatus}
             </div>
           )}
 
           <div style={s.card}>
-            <h3>Users ({filteredUsers.length})</h3>
+            <div style={{marginBottom:14, fontWeight:700}}>
+              Users ({filteredUsers.length})
+            </div>
 
             <input placeholder="Search..." value={search} onChange={e=>setSearch(e.target.value)} style={s.input}/>
 
             {['all','admin','plus','basic'].map(f=>(
-              <button key={f} onClick={()=>setFilter(f)} style={s.btn}>{f}</button>
+              <button key={f} onClick={()=>setFilter(f)} style={{...s.btn, marginRight:6}}>
+                {f}
+              </button>
             ))}
 
             {loading ? <p>Loading...</p> : (
@@ -213,13 +227,13 @@ export default function AdminPanel({ user, logout }) {
                       <td style={s.td}>{u.username}</td>
                       <td style={s.td}>
                         <span style={{
-                          background: ROLE_COLORS[u.role]+'22',
-                          padding:'2px 8px',
-                          borderRadius:4,
-                          color:ROLE_COLORS[u.role]
+                          color: ROLE_COLORS[u.role],
+                          fontWeight:700
                         }}>{u.role}</span>
                       </td>
-                      <td style={s.td}>{u.blocked ? '🔒 Blocked' : '✅ Active'}</td>
+                      <td style={s.td}>
+                        {u.blocked ? '🔒 Blocked' : '✅ Active'}
+                      </td>
                       <td style={s.td}>
                         {u.username === PROTECTED_ADMIN ? (
                           <span style={{opacity:0.3}}>Protected</span>
@@ -228,7 +242,7 @@ export default function AdminPanel({ user, logout }) {
                             <button onClick={()=>toggleBlock(u.username,u.blocked)} style={s.btn}>
                               {u.blocked ? 'Unblock' : 'Block'}
                             </button>
-                            <button onClick={()=>deleteUser(u.username)} style={s.btn}>
+                            <button onClick={()=>deleteUser(u.username)} style={{...s.btn, marginLeft:6}}>
                               Delete
                             </button>
                           </>
@@ -242,7 +256,7 @@ export default function AdminPanel({ user, logout }) {
           </div>
 
           <div style={s.card}>
-            <h3>Create User</h3>
+            <div style={{fontWeight:700, marginBottom:10}}>Create User</div>
             <input placeholder="Username" value={createForm.username} onChange={e=>setCreateForm(p=>({...p,username:e.target.value}))} style={s.input}/>
             <input placeholder="Password" type="password" value={createForm.password} onChange={e=>setCreateForm(p=>({...p,password:e.target.value}))} style={s.input}/>
             <input placeholder="Name" value={createForm.name} onChange={e=>setCreateForm(p=>({...p,name:e.target.value}))} style={s.input}/>
@@ -255,7 +269,7 @@ export default function AdminPanel({ user, logout }) {
           </div>
 
           <div style={s.card}>
-            <h3>Edit User</h3>
+            <div style={{fontWeight:700, marginBottom:10}}>Edit User</div>
             <input placeholder="Current Username" value={editForm.username} onChange={e=>setEditForm(p=>({...p,username:e.target.value}))} style={s.input}/>
             <input placeholder="New Username" value={editForm.newUsername} onChange={e=>setEditForm(p=>({...p,newUsername:e.target.value}))} style={s.input}/>
             <input placeholder="New Name" value={editForm.newName} onChange={e=>setEditForm(p=>({...p,newName:e.target.value}))} style={s.input}/>
