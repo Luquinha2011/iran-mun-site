@@ -1,7 +1,11 @@
 // pages/api/admin-create.js
 import { USERS } from './auth'
+import { Redis } from '@upstash/redis'
 
-if (!global.dynamicUsers) global.dynamicUsers = []
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN,
+})
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
@@ -19,19 +23,15 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Username, password and role are required' })
   }
 
-  // Check against both hardcoded and dynamic users
-  const allUsers = [...USERS, ...global.dynamicUsers]
+  const dynamicUsers = (await redis.get('dynamicUsers')) || []
+  const allUsers = [...USERS, ...dynamicUsers]
+
   if (allUsers.find(u => u.username.toLowerCase() === username.toLowerCase())) {
     return res.status(400).json({ error: `Username "${username}" already exists` })
   }
 
-  global.dynamicUsers.push({
-    username,
-    password,
-    role,
-    name: name || username,
-    blocked: false,
-  })
+  dynamicUsers.push({ username, password, role, name: name || username, blocked: false })
+  await redis.set('dynamicUsers', dynamicUsers)
 
   return res.status(200).json({ success: true })
 }
