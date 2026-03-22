@@ -1,17 +1,9 @@
 // pages/api/auth.js
 
-// ─── ROLES ───────────────────────────────────────────────────────────────────
-// admin   → everything + admin panel (block/unblock accounts)
-// plus    → Iran + China pages + AI briefing + chatbot
-// basic   → Iran + China pages — read only, no AI features
-// ─────────────────────────────────────────────────────────────────────────────
+if (!global.dynamicUsers) global.dynamicUsers = []
 
 const USERS = [
-
-  // ── ADMIN ──────────────────────────────────────────────────────────────────
   { username: 'admin',    password: 'MunAdmin2026!',  role: 'admin',  name: 'Admin',      blocked: false },
-
-  // ── PLUS ACCOUNTS (Iran + China + AI features) ─────────────────────────────
   { username: 'plus01',   password: 'Plus@mun01',     role: 'plus',   name: 'Plus 01',    blocked: false },
   { username: 'plus02',   password: 'Plus@mun02',     role: 'plus',   name: 'Plus 02',    blocked: false },
   { username: 'plus03',   password: 'Plus@mun03',     role: 'plus',   name: 'Plus 03',    blocked: false },
@@ -47,8 +39,6 @@ const USERS = [
   { username: 'plus33',   password: 'Plus@mun33',     role: 'plus',   name: 'Plus 33',    blocked: false },
   { username: 'plus34',   password: 'Plus@mun34',     role: 'plus',   name: 'Plus 34',    blocked: false },
   { username: 'plus35',   password: 'Plus@mun35',     role: 'plus',   name: 'Plus 35',    blocked: false },
-
-  // ── BASIC ACCOUNTS (Iran + China read only) ─────────────────────────────────
   { username: 'basic01',  password: 'Basic@mun01',    role: 'basic',  name: 'Basic 01',   blocked: false },
   { username: 'basic02',  password: 'Basic@mun02',    role: 'basic',  name: 'Basic 02',   blocked: false },
   { username: 'basic03',  password: 'Basic@mun03',    role: 'basic',  name: 'Basic 03',   blocked: false },
@@ -64,20 +54,43 @@ const USERS = [
   { username: 'basic13',  password: 'Basic@mun13',    role: 'basic',  name: 'Basic 13',   blocked: false },
   { username: 'basic14',  password: 'Basic@mun14',    role: 'basic',  name: 'Basic 14',   blocked: false },
   { username: 'basic15',  password: 'Basic@mun15',    role: 'basic',  name: 'Basic 15',   blocked: false },
-
 ]
 
 export { USERS }
+
+// Returns all users including dynamically created ones
+export function getAllUsers() {
+  return [...USERS, ...global.dynamicUsers]
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
   const { username, password } = req.body
   if (!username || !password) return res.status(400).json({ error: 'Username and password required' })
 
-  const user = USERS.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password)
+  if (!global.dynamicUsers) global.dynamicUsers = []
+  if (!global.blockedUsers) global.blockedUsers = new Set()
+  if (!global.renamedUsers) global.renamedUsers = {}  // { oldUsername: { username, name, password } }
+
+  const allUsers = getAllUsers()
+
+  // Apply renames
+  const user = allUsers.find(u => {
+    const overrides = global.renamedUsers[u.username] || {}
+    const effectiveUsername = overrides.username || u.username
+    const effectivePassword = overrides.password || u.password
+    return effectiveUsername.toLowerCase() === username.toLowerCase() && effectivePassword === password
+  })
+
   if (!user) return res.status(401).json({ error: 'Invalid username or password' })
-  if (user.blocked) return res.status(403).json({ error: 'This account has been blocked. Contact your administrator.' })
+
+  const overrides = global.renamedUsers[user.username] || {}
+  const effectiveUsername = overrides.username || user.username
+  const effectiveName = overrides.name || user.name
+  const blocked = global.blockedUsers.has(user.username) || user.blocked
+
+  if (blocked) return res.status(403).json({ error: 'This account has been blocked. Contact your administrator.' })
 
   const token = Buffer.from(`${user.username}:${user.role}:${Date.now()}`).toString('base64')
-  return res.status(200).json({ token, username: user.username, name: user.name, role: user.role })
+  return res.status(200).json({ token, username: effectiveUsername, name: effectiveName, role: user.role })
 }
