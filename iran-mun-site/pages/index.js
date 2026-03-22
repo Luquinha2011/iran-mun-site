@@ -65,7 +65,7 @@ export default function Home({ user, logout }) {
   return (
     <>
       <Head>
-        <title>MUN Research Hub — United Nations</title>
+        <title>MUN Toolkit — United Nations</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet" />
       </Head>
@@ -86,8 +86,8 @@ export default function Home({ user, logout }) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
                   <div style={{ fontSize: 48 }}>🇺🇳</div>
                   <div>
-                    <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 36, fontWeight: 900, lineHeight: 1, letterSpacing: -1 }}>MUN Research Hub</div>
-                    <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', letterSpacing: 3, textTransform: 'uppercase', marginTop: 6 }}>Model United Nations · Research & Procedures</div>
+                    <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 36, fontWeight: 900, lineHeight: 1, letterSpacing: -1 }}>MUN Toolkit</div>
+                    <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', letterSpacing: 3, textTransform: 'uppercase', marginTop: 6 }}>Model United Nations · Research · Procedures · Strategy</div>
                   </div>
                 </div>
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)', padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase' }}>
@@ -305,7 +305,7 @@ export default function Home({ user, logout }) {
 
         {/* FOOTER */}
         <div style={{ background: '#005f8e', color: 'rgba(255,255,255,0.4)', textAlign: 'center', padding: 20, fontSize: 11, letterSpacing: 1 }}>
-          🇺🇳 &nbsp; MUN RESEARCH HUB &nbsp;·&nbsp; MODEL UNITED NATIONS &nbsp;·&nbsp; FOR EDUCATIONAL USE ONLY
+          🇺🇳 &nbsp; MUN TOOLKIT &nbsp;·&nbsp; MODEL UNITED NATIONS &nbsp;·&nbsp; FOR EDUCATIONAL USE ONLY
         </div>
 
       </div>
