@@ -1,5 +1,5 @@
 // pages/index.js — UN/MUN Home Page
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 
@@ -56,6 +56,12 @@ const COMMITTEES = [
   { name: "UNEP", full: "United Nations Environment Programme", desc: "The leading global environmental authority. Sets the global environmental agenda and promotes sustainable development within the UN system.", color: "#27ae60" },
 ]
 
+const COUNTRIES = [
+  { code: 'iran', name: 'Iran', flag: '🇮🇷', color: '#1a5c38', leader: 'President Pezeshkian', system: 'You are speaking as President Masoud Pezeshkian of Iran. You passionately defend Iran\'s sovereignty, its right to peaceful nuclear energy, and frame all Western criticism as neo-colonial interference. You invoke the JCPOA snapback as illegal, defend Iran\'s proxy relationships as legitimate resistance, and always emphasise the suffering of 92 million Iranians under sanctions.' },
+  { code: 'china', name: 'China', flag: '🇨🇳', color: '#c0392b', leader: 'President Xi Jinping', system: 'You are speaking as President Xi Jinping of China. You defend China\'s policies with absolute confidence — Taiwan is a core national interest, Xinjiang is counter-terrorism, Hong Kong is internal affairs. You invoke the Five Principles of Peaceful Coexistence, the Century of Humiliation, and China\'s 800 million poverty reduction achievement. You challenge Western double standards aggressively.' },
+  { code: 'nigeria', name: 'Nigeria', flag: '🇳🇬', color: '#008751', leader: 'President Tinubu', system: 'You are speaking as President Bola Tinubu of Nigeria. You champion Africa\'s development agenda, call for debt relief and reform of the global financial architecture, and defend Nigeria\'s difficult economic reforms as necessary for long-term growth. You frame Nigeria as the natural leader of Africa and call for greater international support for counterterrorism in the Sahel.' },
+]
+
 const MADE_BY = (
   <div style={{
     position: 'fixed', top: 10, left: 10, zIndex: 9999,
@@ -65,10 +71,148 @@ const MADE_BY = (
     padding: '4px 10px', borderRadius: 20,
     fontFamily: "'Source Sans 3', sans-serif", letterSpacing: 0.5,
     pointerEvents: 'none',
-  }}>
-    ✦ Made by Luquinha
-  </div>
+  }}>✦ Made by Luquinha</div>
 )
+
+function Chatbot({ user }) {
+  const [open, setOpen] = useState(false)
+  const [selectedCountry, setSelectedCountry] = useState(null)
+  const [messages, setMessages] = useState([])
+  const [input, setInput] = useState('')
+  const [loading, setLoading] = useState(false)
+  const messagesEndRef = useRef(null)
+
+  useEffect(() => {
+    if (open && messagesEndRef.current) messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
+  }, [messages, open])
+
+  const selectCountry = (country) => {
+    setSelectedCountry(country)
+    setMessages([{ role: 'assistant', content: `Greetings. I am speaking to you as ${country.leader} of ${country.name}. Ask me anything about our positions, our policies, or how to argue our case in committee. I will defend our nation's interests with full conviction.` }])
+  }
+
+  const reset = () => { setSelectedCountry(null); setMessages([]) }
+
+  const sendMessage = async (text) => {
+    const userText = text || input.trim()
+    if (!userText || loading || !selectedCountry) return
+    setInput(''); setLoading(true)
+    const newMessages = [...messages, { role: 'user', content: userText }]
+    setMessages(newMessages)
+    try {
+      const res = await fetch('/api/chat-biased', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: newMessages, systemPrompt: selectedCountry.system })
+      })
+      const data = await res.json()
+      setMessages(prev => [...prev, { role: 'assistant', content: data.reply || 'Sorry, please try again.' }])
+    } catch {
+      setMessages(prev => [...prev, { role: 'assistant', content: 'Connection error. Please try again.' }])
+    }
+    finally { setLoading(false) }
+  }
+
+  const fmt = (text) => text.split('\n').map((line, i) => {
+    const b = line.trim().startsWith('- ') || line.trim().startsWith('• ')
+    const c = line.replace(/^[-•]\s+/, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    return <div key={i} style={{ display: 'flex', gap: b ? 8 : 0, marginBottom: line.trim() ? 4 : 2 }}>{b && <span style={{ color: selectedCountry?.color || '#009EDB', flexShrink: 0 }}>→</span>}<span dangerouslySetInnerHTML={{ __html: c }} /></div>
+  })
+
+  if (!user || (user.role !== 'plus' && user.role !== 'admin')) return null
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1000, background: selectedCountry ? selectedCountry.color : '#009EDB', color: 'white', border: 'none', borderRadius: 50, padding: '14px 20px', fontSize: 20, cursor: 'pointer', boxShadow: '0 4px 20px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', gap: 8 }}
+        title="MUN Biased Assistant"
+      >
+        {open ? '✕' : '💬'}
+        {!open && <span style={{ fontSize: 12, fontWeight: 700, fontFamily: "'Source Sans 3', sans-serif" }}>MUN Assistant</span>}
+      </button>
+
+      {open && (
+        <div style={{ position: 'fixed', bottom: 90, right: 24, zIndex: 1000, width: 380, maxHeight: '70vh', background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, display: 'flex', flexDirection: 'column', boxShadow: '0 8px 40px rgba(0,0,0,0.5)', fontFamily: "'Source Sans 3', sans-serif", overflow: 'hidden' }}>
+
+          {/* HEADER */}
+          <div style={{ background: selectedCountry ? `linear-gradient(135deg, ${selectedCountry.color}cc, ${selectedCountry.color})` : 'linear-gradient(135deg, #005f8e, #009EDB)', padding: '14px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 14, color: 'white' }}>
+                {selectedCountry ? `${selectedCountry.flag} ${selectedCountry.name} MUN Assistant` : '🇺🇳 MUN Biased Assistant'}
+              </div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>
+                {selectedCountry ? `Powered by Groq AI · Biased towards ${selectedCountry.name}` : 'Powered by Groq AI · Select a country'}
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              {selectedCountry && <button onClick={reset} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: 'white', padding: '4px 10px', borderRadius: 4, fontSize: 11, cursor: 'pointer' }}>↩ Switch</button>}
+              <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', color: 'white', fontSize: 18, cursor: 'pointer', lineHeight: 1 }}>✕</button>
+            </div>
+          </div>
+
+          {/* COUNTRY PICKER */}
+          {!selectedCountry && (
+            <div style={{ padding: 20, flex: 1 }}>
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 16, textAlign: 'center' }}>Choose which country's president you want to speak with:</div>
+              {COUNTRIES.map(c => (
+                <button key={c.code} onClick={() => selectCountry(c)} style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: `1px solid ${c.color}44`, borderRadius: 8, padding: '14px 16px', marginBottom: 10, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 14, transition: 'all 0.15s', fontFamily: "'Source Sans 3', sans-serif" }}
+                  onMouseEnter={e => e.currentTarget.style.background = `${c.color}22`}
+                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+                >
+                  <span style={{ fontSize: 32 }}>{c.flag}</span>
+                  <div style={{ textAlign: 'left' }}>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: 'white' }}>{c.name}</div>
+                    <div style={{ fontSize: 11, color: c.color, marginTop: 2 }}>Speaking as {c.leader}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* MESSAGES */}
+          {selectedCountry && (
+            <>
+              <div style={{ flex: 1, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {messages.map((msg, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', flexDirection: msg.role === 'user' ? 'row-reverse' : 'row' }}>
+                    {msg.role === 'assistant' && <div style={{ width: 28, height: 28, borderRadius: '50%', background: selectedCountry.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0 }}>{selectedCountry.flag}</div>}
+                    <div style={{ background: msg.role === 'user' ? '#009EDB' : 'rgba(255,255,255,0.07)', color: 'white', padding: '10px 14px', borderRadius: msg.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px', fontSize: 13, lineHeight: 1.5, maxWidth: '80%' }}>
+                      {fmt(msg.content)}
+                    </div>
+                  </div>
+                ))}
+                {loading && (
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: selectedCountry.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>{selectedCountry.flag}</div>
+                    <div style={{ background: 'rgba(255,255,255,0.07)', padding: '10px 14px', borderRadius: '16px 16px 16px 4px', display: 'flex', gap: 4, alignItems: 'center' }}>
+                      {[0,1,2].map(i => <span key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.4)', display: 'inline-block', animation: `bounce 1s infinite ${i * 0.2}s` }} />)}
+                    </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+              <div style={{ padding: '12px 16px', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', gap: 8 }}>
+                <input
+                  type="text"
+                  placeholder={`Ask ${selectedCountry.leader}...`}
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && sendMessage()}
+                  disabled={loading}
+                  style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', color: 'white', padding: '10px 14px', borderRadius: 8, fontSize: 13, outline: 'none', fontFamily: "'Source Sans 3', sans-serif" }}
+                />
+                <button onClick={() => sendMessage()} disabled={loading || !input.trim()} style={{ background: selectedCountry.color, border: 'none', color: 'white', padding: '10px 14px', borderRadius: 8, cursor: 'pointer', fontSize: 16 }}>➤</button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      <style>{`@keyframes bounce { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-4px) } }`}</style>
+    </>
+  )
+}
 
 export default function Home({ user, logout }) {
   const router = useRouter()
@@ -84,6 +228,7 @@ export default function Home({ user, logout }) {
 
       <div style={{ fontFamily: "'Source Sans 3', sans-serif", background: '#f4f6f9', minHeight: '100vh', color: '#1a1a1a' }}>
         {MADE_BY}
+        <Chatbot user={user} />
 
         {/* UN HEADER */}
         <div style={{ background: 'linear-gradient(135deg, #009EDB 0%, #0077b6 100%)', color: 'white', padding: '48px 40px 40px', position: 'relative', overflow: 'hidden' }}>
@@ -260,6 +405,8 @@ export default function Home({ user, logout }) {
           <div id="countries" style={{ marginBottom: 32 }}>
             <div style={{ background: '#005f8e', color: '#7dd4f8', padding: '10px 20px', fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', fontWeight: 700, borderRadius: '4px 4px 0 0' }}>🗺️ Country Research Pages</div>
             <div style={{ background: 'white', border: '1px solid #dde3ea', padding: 24 }}>
+
+              {/* IRAN */}
               <div onClick={() => (user?.role === 'viewer') ? null : router.push('/iran')} style={{ display: 'flex', alignItems: 'center', gap: 20, padding: 20, border: '1px solid #e0d8cc', borderRadius: 4, background: '#faf7f2', cursor: user?.role === 'viewer' ? 'not-allowed' : 'pointer', transition: 'all 0.15s', maxWidth: 500, opacity: user?.role === 'viewer' ? 0.6 : 1 }}>
                 <div style={{ fontSize: 48 }}>🇮🇷</div>
                 <div>
@@ -275,6 +422,8 @@ export default function Home({ user, logout }) {
                   </div>
                 </div>
               </div>
+
+              {/* CHINA */}
               <div onClick={() => (user?.role === 'viewer') ? null : router.push('/china')} style={{ display: 'flex', alignItems: 'center', gap: 20, padding: 20, border: '1px solid #e8d8d8', borderRadius: 4, background: '#fff8f8', cursor: user?.role === 'viewer' ? 'not-allowed' : 'pointer', transition: 'all 0.15s', maxWidth: 500, marginTop: 12, opacity: user?.role === 'viewer' ? 0.6 : 1 }}>
                 <div style={{ fontSize: 48 }}>🇨🇳</div>
                 <div>
@@ -290,6 +439,24 @@ export default function Home({ user, logout }) {
                   </div>
                 </div>
               </div>
+
+              {/* NIGERIA */}
+              <div onClick={() => (user?.role === 'viewer') ? null : router.push('/nigeria')} style={{ display: 'flex', alignItems: 'center', gap: 20, padding: 20, border: '1px solid #d8e8d8', borderRadius: 4, background: '#f8fff8', cursor: user?.role === 'viewer' ? 'not-allowed' : 'pointer', transition: 'all 0.15s', maxWidth: 500, marginTop: 12, opacity: user?.role === 'viewer' ? 0.6 : 1 }}>
+                <div style={{ fontSize: 48 }}>🇳🇬</div>
+                <div>
+                  <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700 }}>Federal Republic of Nigeria</div>
+                  <div style={{ fontSize: 12, color: '#888', margin: '4px 0' }}>ECOSOC · HRC · DISEC · UNEP · March 2026</div>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
+                    {['Live Intel', 'Power Figures', 'Security Analysis', 'MUN Toolkit', 'AI Chatbot'].map(tag => (
+                      <span key={tag} style={{ background: '#e6f2ec', color: '#008751', padding: '2px 8px', borderRadius: 3, fontSize: 11, fontWeight: 600 }}>{tag}</span>
+                    ))}
+                  </div>
+                  <div style={{ marginTop: 12 }}>
+                    {user?.role === 'viewer' ? <span style={{ background: '#f0f0f0', color: '#888', padding: '6px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>🔒 Delegate Access Required</span> : <span style={{ background: '#008751', color: 'white', padding: '6px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>→ Open Nigeria Research Page</span>}
+                  </div>
+                </div>
+              </div>
+
               <div style={{ marginTop: 14, padding: 14, background: '#f8fafc', border: '1px dashed #dde3ea', borderRadius: 4, fontSize: 12, color: '#999', fontStyle: 'italic' }}>More country pages coming soon.</div>
             </div>
           </div>
