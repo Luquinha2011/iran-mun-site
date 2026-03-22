@@ -10,49 +10,30 @@ export default function App({ Component, pageProps }) {
 
   useEffect(() => {
     const checkAuth = async () => {
-      // Skip auth check on login page
-      if (router.pathname === '/login') {
-        setChecking(false)
-        return
-      }
+      if (router.pathname === '/login') { setChecking(false); return }
 
       const token = localStorage.getItem('mun_token')
       const storedUser = localStorage.getItem('mun_user')
 
-      if (!token || !storedUser) {
-        router.push('/login')
-        return
-      }
+      if (!token || !storedUser) { router.push('/login'); return }
 
       try {
-        const res = await fetch('/api/verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token })
-        })
-
-        if (res.ok) {
-          const userData = await res.json()
-          setUser(userData)
-        } else {
-          localStorage.removeItem('mun_token')
-          localStorage.removeItem('mun_user')
-          router.push('/login')
-        }
+        const res = await fetch('/api/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token }) })
+        if (res.ok) { setUser(await res.json()) }
+        else { localStorage.removeItem('mun_token'); localStorage.removeItem('mun_user'); router.push('/login') }
       } catch {
-        // If verify fails, still try to use stored user
-        try {
-          setUser(JSON.parse(storedUser))
-        } catch {
-          router.push('/login')
-        }
-      } finally {
-        setChecking(false)
-      }
+        try { setUser(JSON.parse(storedUser)) } catch { router.push('/login') }
+      } finally { setChecking(false) }
     }
-
     checkAuth()
   }, [router.pathname])
+
+  // Block viewers from the Iran page
+  useEffect(() => {
+    if (user?.role === 'viewer' && router.pathname === '/iran') {
+      router.push('/')
+    }
+  }, [user, router.pathname])
 
   const logout = () => {
     localStorage.removeItem('mun_token')
@@ -62,12 +43,10 @@ export default function App({ Component, pageProps }) {
 
   if (checking && router.pathname !== '/login') {
     return (
-      <div style={{
-        minHeight: '100vh', background: '#0f1a14',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        <div style={{ color: '#c9a84c', fontFamily: 'sans-serif', fontSize: 14 }}>
-          Loading...
+      <div style={{ minHeight: '100vh', background: '#0a1628', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: '#009EDB', fontFamily: 'sans-serif', fontSize: 14, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ width: 20, height: 20, border: '2px solid #004f7a', borderTopColor: '#009EDB', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+          Loading MUN Research Hub...
         </div>
       </div>
     )
