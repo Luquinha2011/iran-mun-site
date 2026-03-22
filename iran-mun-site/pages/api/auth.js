@@ -1,73 +1,3 @@
-// pages/api/auth.js
-import { Redis } from '@upstash/redis'
-
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-})
-
-// ─── ROLES ───────────────────────────────────────────────────────────────────
-// admin   → everything + admin panel (block/unblock accounts)
-// plus    → Iran + China pages + AI briefing + chatbot
-// basic   → Iran + China pages — read only, no AI features
-// ─────────────────────────────────────────────────────────────────────────────
-
-const USERS = [
-  { username: 'admin',    password: 'MunAdmin2026!',  role: 'admin',  name: 'Admin',      blocked: false },
-  { username: 'plus01',   password: 'Plus@mun01',     role: 'plus',   name: 'Plus 01',    blocked: false },
-  { username: 'plus02',   password: 'Plus@mun02',     role: 'plus',   name: 'Plus 02',    blocked: false },
-  { username: 'plus03',   password: 'Plus@mun03',     role: 'plus',   name: 'Plus 03',    blocked: false },
-  { username: 'plus04',   password: 'Plus@mun04',     role: 'plus',   name: 'Plus 04',    blocked: false },
-  { username: 'plus05',   password: 'Plus@mun05',     role: 'plus',   name: 'Plus 05',    blocked: false },
-  { username: 'plus06',   password: 'Plus@mun06',     role: 'plus',   name: 'Plus 06',    blocked: false },
-  { username: 'plus07',   password: 'Plus@mun07',     role: 'plus',   name: 'Plus 07',    blocked: false },
-  { username: 'plus08',   password: 'Plus@mun08',     role: 'plus',   name: 'Plus 08',    blocked: false },
-  { username: 'plus09',   password: 'Plus@mun09',     role: 'plus',   name: 'Plus 09',    blocked: false },
-  { username: 'plus10',   password: 'Plus@mun10',     role: 'plus',   name: 'Plus 10',    blocked: false },
-  { username: 'plus11',   password: 'Plus@mun11',     role: 'plus',   name: 'Plus 11',    blocked: false },
-  { username: 'plus12',   password: 'Plus@mun12',     role: 'plus',   name: 'Plus 12',    blocked: false },
-  { username: 'plus13',   password: 'Plus@mun13',     role: 'plus',   name: 'Plus 13',    blocked: false },
-  { username: 'plus14',   password: 'Plus@mun14',     role: 'plus',   name: 'Plus 14',    blocked: false },
-  { username: 'plus15',   password: 'Plus@mun15',     role: 'plus',   name: 'Plus 15',    blocked: false },
-  { username: 'plus16',   password: 'Plus@mun16',     role: 'plus',   name: 'Plus 16',    blocked: false },
-  { username: 'plus17',   password: 'Plus@mun17',     role: 'plus',   name: 'Plus 17',    blocked: false },
-  { username: 'plus18',   password: 'Plus@mun18',     role: 'plus',   name: 'Plus 18',    blocked: false },
-  { username: 'plus19',   password: 'Plus@mun19',     role: 'plus',   name: 'Plus 19',    blocked: false },
-  { username: 'plus20',   password: 'Plus@mun20',     role: 'plus',   name: 'Plus 20',    blocked: false },
-  { username: 'plus21',   password: 'Plus@mun21',     role: 'plus',   name: 'Plus 21',    blocked: false },
-  { username: 'plus22',   password: 'Plus@mun22',     role: 'plus',   name: 'Plus 22',    blocked: false },
-  { username: 'plus23',   password: 'Plus@mun23',     role: 'plus',   name: 'Plus 23',    blocked: false },
-  { username: 'plus24',   password: 'Plus@mun24',     role: 'plus',   name: 'Plus 24',    blocked: false },
-  { username: 'plus25',   password: 'Plus@mun25',     role: 'plus',   name: 'Plus 25',    blocked: false },
-  { username: 'plus26',   password: 'Plus@mun26',     role: 'plus',   name: 'Plus 26',    blocked: false },
-  { username: 'plus27',   password: 'Plus@mun27',     role: 'plus',   name: 'Plus 27',    blocked: false },
-  { username: 'plus28',   password: 'Plus@mun28',     role: 'plus',   name: 'Plus 28',    blocked: false },
-  { username: 'plus29',   password: 'Plus@mun29',     role: 'plus',   name: 'Plus 29',    blocked: false },
-  { username: 'plus30',   password: 'Plus@mun30',     role: 'plus',   name: 'Plus 30',    blocked: false },
-  { username: 'plus31',   password: 'Plus@mun31',     role: 'plus',   name: 'Plus 31',    blocked: false },
-  { username: 'plus32',   password: 'Plus@mun32',     role: 'plus',   name: 'Plus 32',    blocked: false },
-  { username: 'plus33',   password: 'Plus@mun33',     role: 'plus',   name: 'Plus 33',    blocked: false },
-  { username: 'plus34',   password: 'Plus@mun34',     role: 'plus',   name: 'Plus 34',    blocked: false },
-  { username: 'plus35',   password: 'Plus@mun35',     role: 'plus',   name: 'Plus 35',    blocked: false },
-  { username: 'basic01',  password: 'Basic@mun01',    role: 'basic',  name: 'Basic 01',   blocked: false },
-  { username: 'basic02',  password: 'Basic@mun02',    role: 'basic',  name: 'Basic 02',   blocked: false },
-  { username: 'basic03',  password: 'Basic@mun03',    role: 'basic',  name: 'Basic 03',   blocked: false },
-  { username: 'basic04',  password: 'Basic@mun04',    role: 'basic',  name: 'Basic 04',   blocked: false },
-  { username: 'basic05',  password: 'Basic@mun05',    role: 'basic',  name: 'Basic 05',   blocked: false },
-  { username: 'basic06',  password: 'Basic@mun06',    role: 'basic',  name: 'Basic 06',   blocked: false },
-  { username: 'basic07',  password: 'Basic@mun07',    role: 'basic',  name: 'Basic 07',   blocked: false },
-  { username: 'basic08',  password: 'Basic@mun08',    role: 'basic',  name: 'Basic 08',   blocked: false },
-  { username: 'basic09',  password: 'Basic@mun09',    role: 'basic',  name: 'Basic 09',   blocked: false },
-  { username: 'basic10',  password: 'Basic@mun10',    role: 'basic',  name: 'Basic 10',   blocked: false },
-  { username: 'basic11',  password: 'Basic@mun11',    role: 'basic',  name: 'Basic 11',   blocked: false },
-  { username: 'basic12',  password: 'Basic@mun12',    role: 'basic',  name: 'Basic 12',   blocked: false },
-  { username: 'basic13',  password: 'Basic@mun13',    role: 'basic',  name: 'Basic 13',   blocked: false },
-  { username: 'basic14',  password: 'Basic@mun14',    role: 'basic',  name: 'Basic 14',   blocked: false },
-  { username: 'basic15',  password: 'Basic@mun15',    role: 'basic',  name: 'Basic 15',   blocked: false },
-]
-
-export { USERS }
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
   const { username, password } = req.body
@@ -76,6 +6,7 @@ export default async function handler(req, res) {
   const dynamicUsers = (await redis.get('dynamicUsers')) || []
   const renamedUsers = (await redis.get('renamedUsers')) || {}
   const blockedUsers = (await redis.smembers('blockedUsers')) || []
+  const terminatedUsers = (await redis.smembers('terminatedUsers')) || []
 
   const allUsers = [...USERS, ...dynamicUsers]
 
@@ -91,9 +22,14 @@ export default async function handler(req, res) {
   const overrides = renamedUsers[user.username] || {}
   const effectiveUsername = overrides.username || user.username
   const effectiveName = overrides.name || user.name
-  const isBlocked = blockedUsers.includes(user.username) || user.blocked
 
-  if (isBlocked) return res.status(403).json({ error: 'This account has been blocked. Contact your administrator.' })
+  if (terminatedUsers.includes(user.username)) {
+    return res.status(403).json({ error: 'TERMINATED' })
+  }
+
+  if (blockedUsers.includes(user.username) || user.blocked) {
+    return res.status(403).json({ error: 'BLOCKED' })
+  }
 
   const token = Buffer.from(`${user.username}:${user.role}:${Date.now()}`).toString('base64')
   return res.status(200).json({ token, username: effectiveUsername, name: effectiveName, role: user.role })
