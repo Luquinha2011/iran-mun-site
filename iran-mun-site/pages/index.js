@@ -57,158 +57,81 @@ const COMMITTEES = [
 ]
 
 const COUNTRIES = [
-  { code: 'iran', name: 'Iran', flag: '🇮🇷', color: '#1a5c38', leader: 'President Pezeshkian', system: 'You are speaking as President Masoud Pezeshkian of Iran. You passionately defend Iran\'s sovereignty, its right to peaceful nuclear energy, and frame all Western criticism as neo-colonial interference. You invoke the JCPOA snapback as illegal, defend Iran\'s proxy relationships as legitimate resistance, and always emphasise the suffering of 92 million Iranians under sanctions.' },
-  { code: 'china', name: 'China', flag: '🇨🇳', color: '#c0392b', leader: 'President Xi Jinping', system: 'You are speaking as President Xi Jinping of China. You defend China\'s policies with absolute confidence — Taiwan is a core national interest, Xinjiang is counter-terrorism, Hong Kong is internal affairs. You invoke the Five Principles of Peaceful Coexistence, the Century of Humiliation, and China\'s 800 million poverty reduction achievement. You challenge Western double standards aggressively.' },
-  { code: 'nigeria', name: 'Nigeria', flag: '🇳🇬', color: '#008751', leader: 'President Tinubu', system: 'You are speaking as President Bola Tinubu of Nigeria. You champion Africa\'s development agenda, call for debt relief and reform of the global financial architecture, and defend Nigeria\'s difficult economic reforms as necessary for long-term growth. You frame Nigeria as the natural leader of Africa and call for greater international support for counterterrorism in the Sahel.' },
+  { name: "Islamic Republic of Iran", flag: "🇮🇷", route: '/iran', committee: 'ECOSOC', tags: ['Live Intel', 'Power Figures', 'ECOSOC Analysis', 'MUN Toolkit', 'AI Chatbot'], tagColor: '#1a5c38', btnColor: '#1a5c38', border: '#e0d8cc', bg: '#faf7f2', keywords: ['iran', 'tehran', 'khamenei', 'irgc', 'nuclear', 'sanctions', 'persian', 'shia'] },
+  { name: "People's Republic of China", flag: "🇨🇳", route: '/china', committee: 'ECOSOC', tags: ['Live Intel', 'Power Figures', 'Taiwan Analysis', 'Xinjiang Briefing', 'AI Chatbot'], tagColor: '#cc0000', btnColor: '#cc0000', border: '#e8d8d8', bg: '#fff8f8', keywords: ['china', 'beijing', 'xi jinping', 'taiwan', 'xinjiang', 'belt and road', 'ccp', 'mandarin'] },
+  { name: "Federal Republic of Nigeria", flag: "🇳🇬", route: '/nigeria', committee: 'ECOSOC · HRC · DISEC · UNEP', tags: ['Live Intel', 'Power Figures', 'Security Analysis', 'MUN Toolkit', 'AI Chatbot'], tagColor: '#008751', btnColor: '#008751', border: '#d8e8d8', bg: '#f8fff8', keywords: ['nigeria', 'abuja', 'lagos', 'tinubu', 'boko haram', 'niger delta', 'naira', 'ecowas', 'africa'] },
 ]
 
 const MADE_BY = (
-  <div style={{
-    position: 'fixed', top: 10, left: 10, zIndex: 9999,
-    background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)',
-    border: '1px solid rgba(255,255,255,0.15)',
-    color: 'rgba(255,255,255,0.7)', fontSize: 11, fontWeight: 600,
-    padding: '4px 10px', borderRadius: 20,
-    fontFamily: "'Source Sans 3', sans-serif", letterSpacing: 0.5,
-    pointerEvents: 'none',
-  }}>✦ Made by Luquinha</div>
+  <div style={{ position: 'fixed', top: 10, left: 10, zIndex: 9999, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.7)', fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 20, fontFamily: "'Source Sans 3', sans-serif", letterSpacing: 0.5, pointerEvents: 'none' }}>✦ Made by Luquinha</div>
 )
 
-function Chatbot({ user }) {
+function Chatbot() {
   const [open, setOpen] = useState(false)
-  const [selectedCountry, setSelectedCountry] = useState(null)
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState([{ role: 'assistant', content: "Hello! I am your MUN research assistant. Ask me anything about procedures, resolution writing, committee rules, or how to argue any country's position." }])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const messagesEndRef = useRef(null)
-
-  useEffect(() => {
-    if (open && messagesEndRef.current) messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, open])
-
-  const selectCountry = (country) => {
-    setSelectedCountry(country)
-    setMessages([{ role: 'assistant', content: `Greetings. I am speaking to you as ${country.leader} of ${country.name}. Ask me anything about our positions, our policies, or how to argue our case in committee. I will defend our nation's interests with full conviction.` }])
-  }
-
-  const reset = () => { setSelectedCountry(null); setMessages([]) }
-
+  useEffect(() => { if (open && messagesEndRef.current) messagesEndRef.current.scrollIntoView({ behavior: 'smooth' }) }, [messages, open])
+  const SUGGESTIONS = ["How do I write a preambulatory clause?", "What is a moderated caucus?", "How do I argue Iran's position at ECOSOC?", "How do I argue China's position on Taiwan?", "What are the strongest arguments for Nigeria at DISEC?", "How do I respond to a Point of Order?"]
   const sendMessage = async (text) => {
-    const userText = text || input.trim()
-    if (!userText || loading || !selectedCountry) return
+    const userText = text || input.trim(); if (!userText || loading) return
     setInput(''); setLoading(true)
     const newMessages = [...messages, { role: 'user', content: userText }]
     setMessages(newMessages)
     try {
-      const res = await fetch('/api/chat-biased', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: newMessages, systemPrompt: selectedCountry.system })
-      })
+      const res = await fetch('/api/chat-home', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: newMessages }) })
       const data = await res.json()
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply || 'Sorry, please try again.' }])
-    } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Connection error. Please try again.' }])
-    }
+    } catch { setMessages(prev => [...prev, { role: 'assistant', content: 'Connection error. Please try again.' }]) }
     finally { setLoading(false) }
   }
-
-  const fmt = (text) => text.split('\n').map((line, i) => {
-    const b = line.trim().startsWith('- ') || line.trim().startsWith('• ')
-    const c = line.replace(/^[-•]\s+/, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    return <div key={i} style={{ display: 'flex', gap: b ? 8 : 0, marginBottom: line.trim() ? 4 : 2 }}>{b && <span style={{ color: selectedCountry?.color || '#009EDB', flexShrink: 0 }}>→</span>}<span dangerouslySetInnerHTML={{ __html: c }} /></div>
-  })
-
-  if (!user || (user.role !== 'plus' && user.role !== 'admin')) return null
-
+  const fmt = (text) => text.split('\n').map((line, i) => { const b = line.trim().startsWith('- ') || line.trim().startsWith('• '); const c = line.replace(/^[-•]\s+/, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); return <div key={i} style={{ display: 'flex', gap: b ? 8 : 0, marginBottom: line.trim() ? 4 : 2 }}>{b && <span style={{ color: '#009EDB', flexShrink: 0 }}>→</span>}<span dangerouslySetInnerHTML={{ __html: c }} /></div> })
   return (
     <>
-      <button
-        onClick={() => setOpen(o => !o)}
-        style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1000, background: selectedCountry ? selectedCountry.color : '#009EDB', color: 'white', border: 'none', borderRadius: 50, padding: '14px 20px', fontSize: 20, cursor: 'pointer', boxShadow: '0 4px 20px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', gap: 8 }}
-        title="MUN Biased Assistant"
-      >
-        {open ? '✕' : '💬'}
-        {!open && <span style={{ fontSize: 12, fontWeight: 700, fontFamily: "'Source Sans 3', sans-serif" }}>MUN Assistant</span>}
+      <button onClick={() => setOpen(o => !o)} style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1000, background: '#009EDB', color: 'white', border: 'none', borderRadius: open ? '50%' : 30, padding: open ? '14px' : '12px 20px', fontSize: open ? 18 : 13, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 20px rgba(0,158,219,0.4)', display: 'flex', alignItems: 'center', gap: 8, fontFamily: "'Source Sans 3', sans-serif", transition: 'all 0.2s' }}>
+        {open ? '✕' : <><span>💬</span><span>MUN Assistant</span></>}
       </button>
-
       {open && (
-        <div style={{ position: 'fixed', bottom: 90, right: 24, zIndex: 1000, width: 380, maxHeight: '70vh', background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, display: 'flex', flexDirection: 'column', boxShadow: '0 8px 40px rgba(0,0,0,0.5)', fontFamily: "'Source Sans 3', sans-serif", overflow: 'hidden' }}>
-
-          {/* HEADER */}
-          <div style={{ background: selectedCountry ? `linear-gradient(135deg, ${selectedCountry.color}cc, ${selectedCountry.color})` : 'linear-gradient(135deg, #005f8e, #009EDB)', padding: '14px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ position: 'fixed', bottom: 80, right: 24, zIndex: 999, width: 380, height: 520, background: '#0a1628', borderRadius: 12, boxShadow: '0 8px 40px rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', flexDirection: 'column', overflow: 'hidden', fontFamily: "'Source Sans 3', sans-serif" }}>
+          <div style={{ background: 'linear-gradient(135deg, #005f8e, #009EDB)', padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <div style={{ fontWeight: 700, fontSize: 14, color: 'white' }}>
-                {selectedCountry ? `${selectedCountry.flag} ${selectedCountry.name} MUN Assistant` : '🇺🇳 MUN Biased Assistant'}
-              </div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>
-                {selectedCountry ? `Powered by Groq AI · Biased towards ${selectedCountry.name}` : 'Powered by Groq AI · Select a country'}
-              </div>
+              <div style={{ fontWeight: 700, fontSize: 14, color: 'white' }}>🇺🇳 MUN Assistant</div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>Procedures · Resolutions · Country Positions</div>
             </div>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              {selectedCountry && <button onClick={reset} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: 'white', padding: '4px 10px', borderRadius: 4, fontSize: 11, cursor: 'pointer' }}>↩ Switch</button>}
-              <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', color: 'white', fontSize: 18, cursor: 'pointer', lineHeight: 1 }}>✕</button>
-            </div>
+            <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontSize: 16 }}>✕</button>
           </div>
-
-          {/* COUNTRY PICKER */}
-          {!selectedCountry && (
-            <div style={{ padding: 20, flex: 1 }}>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 16, textAlign: 'center' }}>Choose which country's president you want to speak with:</div>
-              {COUNTRIES.map(c => (
-                <button key={c.code} onClick={() => selectCountry(c)} style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: `1px solid ${c.color}44`, borderRadius: 8, padding: '14px 16px', marginBottom: 10, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 14, transition: 'all 0.15s', fontFamily: "'Source Sans 3', sans-serif" }}
-                  onMouseEnter={e => e.currentTarget.style.background = `${c.color}22`}
-                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-                >
-                  <span style={{ fontSize: 32 }}>{c.flag}</span>
-                  <div style={{ textAlign: 'left' }}>
-                    <div style={{ fontWeight: 700, fontSize: 14, color: 'white' }}>{c.name}</div>
-                    <div style={{ fontSize: 11, color: c.color, marginTop: 2 }}>Speaking as {c.leader}</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* MESSAGES */}
-          {selectedCountry && (
-            <>
-              <div style={{ flex: 1, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {messages.map((msg, i) => (
-                  <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', flexDirection: msg.role === 'user' ? 'row-reverse' : 'row' }}>
-                    {msg.role === 'assistant' && <div style={{ width: 28, height: 28, borderRadius: '50%', background: selectedCountry.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0 }}>{selectedCountry.flag}</div>}
-                    <div style={{ background: msg.role === 'user' ? '#009EDB' : 'rgba(255,255,255,0.07)', color: 'white', padding: '10px 14px', borderRadius: msg.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px', fontSize: 13, lineHeight: 1.5, maxWidth: '80%' }}>
-                      {fmt(msg.content)}
-                    </div>
-                  </div>
-                ))}
-                {loading && (
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: selectedCountry.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>{selectedCountry.flag}</div>
-                    <div style={{ background: 'rgba(255,255,255,0.07)', padding: '10px 14px', borderRadius: '16px 16px 16px 4px', display: 'flex', gap: 4, alignItems: 'center' }}>
-                      {[0,1,2].map(i => <span key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.4)', display: 'inline-block', animation: `bounce 1s infinite ${i * 0.2}s` }} />)}
-                    </div>
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
+          <div style={{ flex: 1, overflowY: 'auto', padding: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {messages.map((msg, i) => (
+              <div key={i} style={{ display: 'flex', gap: 8, justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
+                {msg.role === 'assistant' && <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#009EDB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0 }}>🤖</div>}
+                <div style={{ maxWidth: '80%', padding: '8px 12px', borderRadius: 10, fontSize: 12, lineHeight: 1.5, background: msg.role === 'user' ? '#009EDB' : 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.85)', borderBottomRightRadius: msg.role === 'user' ? 2 : 10, borderBottomLeftRadius: msg.role === 'assistant' ? 2 : 10 }}>
+                  {fmt(msg.content)}
+                </div>
               </div>
-              <div style={{ padding: '12px 16px', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', gap: 8 }}>
-                <input
-                  type="text"
-                  placeholder={`Ask ${selectedCountry.leader}...`}
-                  value={input}
-                  onChange={e => setInput(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && sendMessage()}
-                  disabled={loading}
-                  style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', color: 'white', padding: '10px 14px', borderRadius: 8, fontSize: 13, outline: 'none', fontFamily: "'Source Sans 3', sans-serif" }}
-                />
-                <button onClick={() => sendMessage()} disabled={loading || !input.trim()} style={{ background: selectedCountry.color, border: 'none', color: 'white', padding: '10px 14px', borderRadius: 8, cursor: 'pointer', fontSize: 16 }}>➤</button>
+            ))}
+            {loading && (
+              <div style={{ display: 'flex', gap: 8 }}>
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#009EDB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>🤖</div>
+                <div style={{ padding: '8px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.06)', display: 'flex', gap: 4, alignItems: 'center' }}>
+                  {[0,1,2].map(i => <span key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: '#009EDB', display: 'inline-block', animation: `bounce 1s ${i * 0.2}s infinite` }} />)}
+                </div>
               </div>
-            </>
-          )}
+            )}
+            {messages.length === 1 && (
+              <div style={{ marginTop: 8 }}>
+                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>Suggested questions</div>
+                {SUGGESTIONS.map((q, i) => <button key={i} onClick={() => sendMessage(q)} style={{ display: 'block', width: '100%', textAlign: 'left', background: 'rgba(0,158,219,0.08)', border: '1px solid rgba(0,158,219,0.2)', color: 'rgba(255,255,255,0.7)', padding: '6px 10px', borderRadius: 6, fontSize: 11, cursor: 'pointer', marginBottom: 4, fontFamily: "'Source Sans 3', sans-serif" }}>{q}</button>)}
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+          <div style={{ padding: '10px 12px', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', gap: 8 }}>
+            <input type="text" value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && sendMessage()} placeholder="Ask anything about MUN..." disabled={loading} style={{ flex: 1, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', padding: '8px 12px', borderRadius: 6, fontSize: 12, outline: 'none', fontFamily: "'Source Sans 3', sans-serif" }} />
+            <button onClick={() => sendMessage()} disabled={loading || !input.trim()} style={{ background: '#009EDB', border: 'none', color: 'white', padding: '8px 14px', borderRadius: 6, cursor: 'pointer', fontSize: 14 }}>➤</button>
+          </div>
         </div>
       )}
-
       <style>{`@keyframes bounce { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-4px) } }`}</style>
     </>
   )
@@ -217,6 +140,14 @@ function Chatbot({ user }) {
 export default function Home({ user, logout }) {
   const router = useRouter()
   const [activeProc, setActiveProc] = useState(0)
+  const [countrySearch, setCountrySearch] = useState('')
+  const isPlus = user?.role === 'plus' || user?.role === 'admin'
+
+  const filteredCountries = COUNTRIES.filter(c => {
+    if (!countrySearch) return true
+    const q = countrySearch.toLowerCase()
+    return c.name.toLowerCase().includes(q) || c.committee.toLowerCase().includes(q) || c.keywords.some(k => k.includes(q))
+  })
 
   return (
     <>
@@ -228,7 +159,7 @@ export default function Home({ user, logout }) {
 
       <div style={{ fontFamily: "'Source Sans 3', sans-serif", background: '#f4f6f9', minHeight: '100vh', color: '#1a1a1a' }}>
         {MADE_BY}
-        <Chatbot user={user} />
+        {isPlus && <Chatbot />}
 
         {/* UN HEADER */}
         <div style={{ background: 'linear-gradient(135deg, #009EDB 0%, #0077b6 100%)', color: 'white', padding: '48px 40px 40px', position: 'relative', overflow: 'hidden' }}>
@@ -251,8 +182,8 @@ export default function Home({ user, logout }) {
               </div>
               {user && (
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginBottom: 4 }}>Signed in as</div>
-                  <div style={{ fontWeight: 700, fontSize: 15 }}>{user.name || user.username}</div>
+                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 2 }}>Hello,</div>
+                  <div style={{ fontWeight: 700, fontSize: 18, fontFamily: "'Playfair Display', serif" }}>{user.name || user.username} 👋</div>
                   <div style={{ display: 'inline-block', background: 'rgba(255,255,255,0.2)', padding: '2px 10px', borderRadius: 3, fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', margin: '4px 0' }}>{user.role}</div>
                   <div><button onClick={logout} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.6)', padding: '4px 12px', borderRadius: 3, fontSize: 11, cursor: 'pointer', marginTop: 4 }}>Sign Out</button></div>
                 </div>
@@ -265,16 +196,8 @@ export default function Home({ user, logout }) {
         <div style={{ background: '#005f8e', borderBottom: '1px solid #004f7a' }}>
           <div style={{ maxWidth: 1000, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', gap: 4, height: 44 }}>
             {['🏠 Home', '📜 Procedures', '🗳️ Resolutions', '🌐 Committees', '🗺️ Countries'].map((item, i) => (
-              <button key={i} style={{
-                background: i === 0 ? 'rgba(255,255,255,0.15)' : 'none',
-                border: 'none', color: i === 0 ? 'white' : 'rgba(255,255,255,0.6)',
-                padding: '8px 14px', borderRadius: 3, cursor: 'pointer',
-                fontSize: 12, fontWeight: 600, fontFamily: "'Source Sans 3', sans-serif", letterSpacing: 0.3,
-              }}
-              onClick={() => {
-                const ids = ['home', 'procedures', 'resolutions', 'committees', 'countries']
-                document.getElementById(ids[i])?.scrollIntoView({ behavior: 'smooth' })
-              }}>{item}</button>
+              <button key={i} style={{ background: i === 0 ? 'rgba(255,255,255,0.15)' : 'none', border: 'none', color: i === 0 ? 'white' : 'rgba(255,255,255,0.6)', padding: '8px 14px', borderRadius: 3, cursor: 'pointer', fontSize: 12, fontWeight: 600, fontFamily: "'Source Sans 3', sans-serif", letterSpacing: 0.3 }}
+                onClick={() => { const ids = ['home', 'procedures', 'resolutions', 'committees', 'countries']; document.getElementById(ids[i])?.scrollIntoView({ behavior: 'smooth' }) }}>{item}</button>
             ))}
             {user?.role === 'admin' && (
               <button onClick={() => router.push('/admin')} style={{ marginLeft: 'auto', background: 'rgba(201,168,76,0.2)', border: '1px solid rgba(201,168,76,0.5)', color: '#c9a84c', padding: '6px 14px', borderRadius: 3, cursor: 'pointer', fontSize: 12, fontWeight: 700, fontFamily: "'Source Sans 3', sans-serif", letterSpacing: 0.3 }}>⚙️ Admin</button>
@@ -301,9 +224,7 @@ export default function Home({ user, logout }) {
                 <div style={{ fontSize: 24, marginBottom: 8 }}>🇮🇷</div>
                 <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Iran Research Page</div>
                 <div style={{ fontSize: 13, color: '#666', lineHeight: 1.5 }}>Full country research — live intel, power figures, ECOSOC analysis, MUN toolkit.</div>
-                <div style={{ marginTop: 10, display: 'inline-block', background: '#1a5c38', color: 'white', padding: '5px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>
-                  {user?.role === 'viewer' ? '🔒 Delegate Access Required' : '→ Open Iran Page'}
-                </div>
+                <div style={{ marginTop: 10, display: 'inline-block', background: '#1a5c38', color: 'white', padding: '5px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>→ Open Iran Page</div>
               </div>
             </div>
           </div>
@@ -406,56 +327,46 @@ export default function Home({ user, logout }) {
             <div style={{ background: '#005f8e', color: '#7dd4f8', padding: '10px 20px', fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', fontWeight: 700, borderRadius: '4px 4px 0 0' }}>🗺️ Country Research Pages</div>
             <div style={{ background: 'white', border: '1px solid #dde3ea', padding: 24 }}>
 
-              {/* IRAN */}
-              <div onClick={() => (user?.role === 'viewer') ? null : router.push('/iran')} style={{ display: 'flex', alignItems: 'center', gap: 20, padding: 20, border: '1px solid #e0d8cc', borderRadius: 4, background: '#faf7f2', cursor: user?.role === 'viewer' ? 'not-allowed' : 'pointer', transition: 'all 0.15s', maxWidth: 500, opacity: user?.role === 'viewer' ? 0.6 : 1 }}>
-                <div style={{ fontSize: 48 }}>🇮🇷</div>
-                <div>
-                  <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700 }}>Islamic Republic of Iran</div>
-                  <div style={{ fontSize: 12, color: '#888', margin: '4px 0' }}>ECOSOC Committee · March 2026</div>
-                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
-                    {['Live Intel', 'Power Figures', 'ECOSOC Analysis', 'MUN Toolkit', 'AI Chatbot'].map(tag => (
-                      <span key={tag} style={{ background: '#e6f2ec', color: '#1a5c38', padding: '2px 8px', borderRadius: 3, fontSize: 11, fontWeight: 600 }}>{tag}</span>
-                    ))}
-                  </div>
-                  <div style={{ marginTop: 12 }}>
-                    {user?.role === 'viewer' ? <span style={{ background: '#f0f0f0', color: '#888', padding: '6px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>🔒 Delegate Access Required</span> : <span style={{ background: '#1a5c38', color: 'white', padding: '6px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>→ Open Iran Research Page</span>}
-                  </div>
+              {/* COUNTRY SEARCH */}
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ position: 'relative', maxWidth: 400 }}>
+                  <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 14, color: '#999' }}>🔍</span>
+                  <input
+                    type="text"
+                    placeholder="Search countries — Iran, China, Nigeria, ECOSOC..."
+                    value={countrySearch}
+                    onChange={e => setCountrySearch(e.target.value)}
+                    style={{ width: '100%', padding: '10px 12px 10px 36px', border: '1px solid #dde3ea', borderRadius: 6, fontSize: 13, outline: 'none', fontFamily: "'Source Sans 3', sans-serif", color: '#1a1a1a', background: '#f8fafc', boxSizing: 'border-box' }}
+                  />
+                  {countrySearch && <button onClick={() => setCountrySearch('')} style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: '#999' }}>✕</button>}
                 </div>
+                {countrySearch && <div style={{ fontSize: 12, color: '#999', marginTop: 6 }}>{filteredCountries.length} result{filteredCountries.length !== 1 ? 's' : ''} for "{countrySearch}"</div>}
               </div>
 
-              {/* CHINA */}
-              <div onClick={() => (user?.role === 'viewer') ? null : router.push('/china')} style={{ display: 'flex', alignItems: 'center', gap: 20, padding: 20, border: '1px solid #e8d8d8', borderRadius: 4, background: '#fff8f8', cursor: user?.role === 'viewer' ? 'not-allowed' : 'pointer', transition: 'all 0.15s', maxWidth: 500, marginTop: 12, opacity: user?.role === 'viewer' ? 0.6 : 1 }}>
-                <div style={{ fontSize: 48 }}>🇨🇳</div>
-                <div>
-                  <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700 }}>People's Republic of China</div>
-                  <div style={{ fontSize: 12, color: '#888', margin: '4px 0' }}>ECOSOC Committee · March 2026</div>
-                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
-                    {['Live Intel', 'Power Figures', 'Taiwan Analysis', 'Xinjiang Briefing', 'AI Chatbot'].map(tag => (
-                      <span key={tag} style={{ background: '#fde8e8', color: '#cc0000', padding: '2px 8px', borderRadius: 3, fontSize: 11, fontWeight: 600 }}>{tag}</span>
-                    ))}
+              {/* COUNTRY LIST */}
+              {filteredCountries.length === 0 ? (
+                <div style={{ padding: '24px 0', textAlign: 'center', color: '#999', fontSize: 13, fontStyle: 'italic' }}>No countries found for "{countrySearch}"</div>
+              ) : (
+                filteredCountries.map((c, idx) => (
+                  <div key={c.route} onClick={() => user?.role !== 'viewer' && router.push(c.route)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 20, padding: 20, border: `1px solid ${c.border}`, borderRadius: 4, background: c.bg, cursor: user?.role === 'viewer' ? 'not-allowed' : 'pointer', transition: 'all 0.15s', maxWidth: 500, marginTop: idx > 0 ? 12 : 0, opacity: user?.role === 'viewer' ? 0.6 : 1 }}>
+                    <div style={{ fontSize: 48 }}>{c.flag}</div>
+                    <div>
+                      <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700 }}>{c.name}</div>
+                      <div style={{ fontSize: 12, color: '#888', margin: '4px 0' }}>{c.committee} · March 2026</div>
+                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
+                        {c.tags.map(tag => <span key={tag} style={{ background: c.tagColor + '18', color: c.tagColor, padding: '2px 8px', borderRadius: 3, fontSize: 11, fontWeight: 600 }}>{tag}</span>)}
+                      </div>
+                      <div style={{ marginTop: 12 }}>
+                        {user?.role === 'viewer'
+                          ? <span style={{ background: '#f0f0f0', color: '#888', padding: '6px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>🔒 Delegate Access Required</span>
+                          : <span style={{ background: c.btnColor, color: 'white', padding: '6px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>→ Open {c.name.split(' ').pop()} Research Page</span>
+                        }
+                      </div>
+                    </div>
                   </div>
-                  <div style={{ marginTop: 12 }}>
-                    {user?.role === 'viewer' ? <span style={{ background: '#f0f0f0', color: '#888', padding: '6px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>🔒 Delegate Access Required</span> : <span style={{ background: '#cc0000', color: 'white', padding: '6px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>→ Open China Research Page</span>}
-                  </div>
-                </div>
-              </div>
-
-              {/* NIGERIA */}
-              <div onClick={() => (user?.role === 'viewer') ? null : router.push('/nigeria')} style={{ display: 'flex', alignItems: 'center', gap: 20, padding: 20, border: '1px solid #d8e8d8', borderRadius: 4, background: '#f8fff8', cursor: user?.role === 'viewer' ? 'not-allowed' : 'pointer', transition: 'all 0.15s', maxWidth: 500, marginTop: 12, opacity: user?.role === 'viewer' ? 0.6 : 1 }}>
-                <div style={{ fontSize: 48 }}>🇳🇬</div>
-                <div>
-                  <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700 }}>Federal Republic of Nigeria</div>
-                  <div style={{ fontSize: 12, color: '#888', margin: '4px 0' }}>ECOSOC · HRC · DISEC · UNEP · March 2026</div>
-                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
-                    {['Live Intel', 'Power Figures', 'Security Analysis', 'MUN Toolkit', 'AI Chatbot'].map(tag => (
-                      <span key={tag} style={{ background: '#e6f2ec', color: '#008751', padding: '2px 8px', borderRadius: 3, fontSize: 11, fontWeight: 600 }}>{tag}</span>
-                    ))}
-                  </div>
-                  <div style={{ marginTop: 12 }}>
-                    {user?.role === 'viewer' ? <span style={{ background: '#f0f0f0', color: '#888', padding: '6px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>🔒 Delegate Access Required</span> : <span style={{ background: '#008751', color: 'white', padding: '6px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>→ Open Nigeria Research Page</span>}
-                  </div>
-                </div>
-              </div>
+                ))
+              )}
 
               <div style={{ marginTop: 14, padding: 14, background: '#f8fafc', border: '1px dashed #dde3ea', borderRadius: 4, fontSize: 12, color: '#999', fontStyle: 'italic' }}>More country pages coming soon.</div>
             </div>
