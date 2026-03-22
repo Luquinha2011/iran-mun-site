@@ -124,6 +124,25 @@ export default function Home({ user, logout }) {
               }}
               >{item}</button>
             ))}
+            {user?.role === 'admin' && (
+              <button
+                onClick={() => router.push('/admin')}
+                style={{
+                  marginLeft: 'auto',
+                  background: 'rgba(201,168,76,0.2)',
+                  border: '1px solid rgba(201,168,76,0.5)',
+                  color: '#c9a84c',
+                  padding: '6px 14px',
+                  borderRadius: 3,
+                  cursor: 'pointer',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  fontFamily: "'Source Sans 3', sans-serif",
+                  letterSpacing: 0.3,
+                }}>
+                ⚙️ Admin
+              </button>
+            )}
           </div>
         </div>
 
