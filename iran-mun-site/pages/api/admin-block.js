@@ -1,11 +1,15 @@
 // pages/api/admin-block.js
-// Block or unblock a user — admin only
+import { Redis } from '@upstash/redis'
+
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN,
+})
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
   const { token, username, blocked } = req.body
 
-  // Verify admin token
   try {
     const decoded = Buffer.from(token, 'base64').toString('utf8')
     const [, role] = decoded.split(':')
@@ -14,16 +18,11 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Invalid token' })
   }
 
-  if (!username) return res.status(400).json({ error: 'Username required' })
-
-  // Initialise global block list if needed
-  if (!global.blockedUsers) global.blockedUsers = new Set()
-
   if (blocked) {
-    global.blockedUsers.add(username)
+    await redis.sadd('blockedUsers', username)
   } else {
-    global.blockedUsers.delete(username)
+    await redis.srem('blockedUsers', username)
   }
 
-  return res.status(200).json({ success: true, username, blocked })
+  return res.status(200).json({ success: true })
 }
