@@ -50,12 +50,30 @@ const RESOLUTION_STARTERS = {
 }
 
 const COMMITTEES = [
-  { name: "ECOSOC", full: "Economic and Social Council", desc: "Coordinates economic, social, and development work of the UN. 54 rotating member states.", color: "#1a6fa0" },
-  { name: "GA First Committee", full: "Disarmament and International Security", desc: "Deals with disarmament, global challenges, and threats to international peace.", color: "#1a5c38" },
-  { name: "GA Third Committee", full: "Social, Humanitarian and Cultural", desc: "Human rights, social development, status of women, refugees, drug control.", color: "#8e44ad" },
-  { name: "Security Council", full: "UN Security Council", desc: "Primary responsibility for international peace and security. 5 permanent + 10 elected members.", color: "#c0392b" },
-  { name: "UNHRC", full: "Human Rights Council", desc: "Promotes and protects human rights globally. 47 member states elected by the General Assembly.", color: "#e67e22" },
-  { name: "UNEP", full: "Environment Programme", desc: "Leading global environmental authority. Coordinates environmental activities of the UN.", color: "#27ae60" },
+  {
+    name: "HRC",
+    full: "Human Rights Council",
+    desc: "Promotes and protects human rights around the globe. Addresses situations of human rights violations and makes recommendations. 47 member states elected by the General Assembly.",
+    color: "#e67e22"
+  },
+  {
+    name: "ECOSOC",
+    full: "Economic and Social Council",
+    desc: "Coordinates the economic, social, and related work of the UN and its specialised agencies. 54 rotating member states.",
+    color: "#1a6fa0"
+  },
+  {
+    name: "DISEC",
+    full: "Disarmament and International Security Committee",
+    desc: "First Committee of the General Assembly. Deals with disarmament, global challenges, and threats to international peace and security.",
+    color: "#1a5c38"
+  },
+  {
+    name: "UNEP",
+    full: "United Nations Environment Programme",
+    desc: "The leading global environmental authority. Sets the global environmental agenda and promotes sustainable development within the UN system.",
+    color: "#27ae60"
+  },
 ]
 
 export default function Home({ user, logout }) {
@@ -159,7 +177,7 @@ export default function Home({ user, logout }) {
               <div style={{ background: 'white', border: '1px solid #dde3ea', borderRadius: 4, padding: 20, borderTop: '3px solid #1a5c38' }}>
                 <div style={{ fontSize: 24, marginBottom: 8 }}>🌐</div>
                 <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Committee Guides</div>
-                <div style={{ fontSize: 13, color: '#666', lineHeight: 1.5 }}>ECOSOC, Security Council, GA committees — mandates, procedures, and key differences.</div>
+                <div style={{ fontSize: 13, color: '#666', lineHeight: 1.5 }}>HRC, ECOSOC, DISEC, UNEP — mandates, procedures, and key differences.</div>
               </div>
               <div style={{ background: 'white', border: '1px solid #dde3ea', borderRadius: 4, padding: 20, borderTop: '3px solid #c9a84c', cursor: 'pointer' }}
                 onClick={() => router.push('/iran')}>
@@ -267,7 +285,7 @@ export default function Home({ user, logout }) {
             <div style={{ background: '#005f8e', color: '#7dd4f8', padding: '10px 20px', fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', fontWeight: 700, borderRadius: '4px 4px 0 0' }}>
               🌐 UN Committees Overview
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 1, background: '#dde3ea' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: '#dde3ea' }}>
               {COMMITTEES.map(c => (
                 <div key={c.name} style={{ background: 'white', padding: 20 }}>
                   <div style={{ borderLeft: `3px solid ${c.color}`, paddingLeft: 12, marginBottom: 10 }}>
