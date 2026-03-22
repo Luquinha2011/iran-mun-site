@@ -26,36 +26,35 @@ export default async function handler(req, res) {
   const dynamicUsers = (await redis.get('dynamicUsers')) || []
   const renamedUsers = (await redis.get('renamedUsers')) || {}
 
-  // Find by effective (display) username — search dynamic users first
   const dynMatch = dynamicUsers.find(u => {
     const effective = renamedUsers[u.username]?.username || u.username
     return effective.toLowerCase() === username.toLowerCase()
   })
 
-  // If not found in dynamic users, check if it's a hardcoded user being blocked instead
   if (!dynMatch) {
-    const hardcodedMatch = USERS.find(u => {
+    const isHardcoded = USERS.find(u => {
       const effective = renamedUsers[u.username]?.username || u.username
       return effective.toLowerCase() === username.toLowerCase()
     })
-    if (hardcodedMatch) {
-      return res.status(403).json({ error: 'Hardcoded accounts cannot be deleted — use Block instead' })
+    if (isHardcoded) {
+      // For hardcoded users, mark as terminated in Redis instead
+      await redis.sadd('terminatedUsers', isHardcoded.username)
+      return res.status(200).json({ success: true })
     }
     return res.status(404).json({ error: `User "${username}" not found` })
   }
 
   const originalKey = dynMatch.username
-
-  // Remove from dynamic users
   const filtered = dynamicUsers.filter(u => u.username !== originalKey)
   await redis.set('dynamicUsers', filtered)
 
-  // Clean up renames and blocks
   if (renamedUsers[originalKey]) {
     delete renamedUsers[originalKey]
     await redis.set('renamedUsers', renamedUsers)
   }
+
   await redis.srem('blockedUsers', originalKey)
+  await redis.sadd('terminatedUsers', originalKey)
 
   return res.status(200).json({ success: true })
 }
