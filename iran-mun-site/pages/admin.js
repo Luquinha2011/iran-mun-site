@@ -1,3 +1,53 @@
+Here are both files in full:
+
+---
+
+**`pages/api/admin-delete.js`** — create this as a new file:
+
+```js
+// pages/api/admin-delete.js
+import { USERS } from './auth'
+import { Redis } from '@upstash/redis'
+
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN,
+})
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') return res.status(405).end()
+  const { token, username } = req.body
+
+  try {
+    const decoded = Buffer.from(token, 'base64').toString('utf8')
+    const [, adminRole] = decoded.split(':')
+    if (adminRole !== 'admin') return res.status(403).json({ error: 'Admin only' })
+  } catch {
+    return res.status(401).json({ error: 'Invalid token' })
+  }
+
+  if (username === 'admin') {
+    return res.status(403).json({ error: 'Cannot delete the main admin account' })
+  }
+
+  const isHardcoded = USERS.find(u => u.username === username)
+  if (isHardcoded) {
+    return res.status(403).json({ error: 'Cannot delete hardcoded accounts — use block instead' })
+  }
+
+  const dynamicUsers = (await redis.get('dynamicUsers')) || []
+  const filtered = dynamicUsers.filter(u => u.username !== username)
+  await redis.set('dynamicUsers', filtered)
+
+  return res.status(200).json({ success: true })
+}
+```
+
+---
+
+**`pages/admin.js`** — full file:
+
+```jsx
 // pages/admin.js — Admin Panel (admin role only)
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
@@ -53,6 +103,18 @@ export default function AdminPanel({ user, logout }) {
     } catch { setActionStatus('Request failed.') }
   }
 
+  const deleteUser = async (username) => {
+    if (!confirm(`Are you sure you want to delete "${username}"? This cannot be undone.`)) return
+    setActionStatus(`Deleting ${username}...`)
+    try {
+      const token = localStorage.getItem('mun_token')
+      const res = await fetch('/api/admin-delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, username }) })
+      const data = await res.json()
+      if (data.success) { setActionStatus(`✅ "${username}" deleted successfully.`); fetchUsers() }
+      else setActionStatus('❌ ' + (data.error || 'Failed to delete.'))
+    } catch { setActionStatus('❌ Request failed.') }
+  }
+
   const ROLE_COLORS = { admin: '#c9a84c', plus: '#009EDB', basic: '#555' }
   const ROLE_LABELS = { admin: 'Admin', plus: 'Plus', basic: 'Basic' }
 
@@ -85,6 +147,7 @@ export default function AdminPanel({ user, logout }) {
     input: { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'white', padding: '8px 14px', borderRadius: 6, fontSize: 13, outline: 'none', fontFamily: "'Source Sans 3', sans-serif" },
     filterBtn: (active) => ({ background: active ? '#009EDB' : 'rgba(255,255,255,0.06)', border: '1px solid ' + (active ? '#009EDB' : 'rgba(255,255,255,0.12)'), color: active ? 'white' : 'rgba(255,255,255,0.5)', padding: '6px 14px', borderRadius: 6, fontSize: 12, cursor: 'pointer', fontFamily: "'Source Sans 3', sans-serif", fontWeight: 600 }),
     blockBtn: (blocked) => ({ background: blocked ? 'rgba(39,174,96,0.15)' : 'rgba(192,57,43,0.15)', border: '1px solid ' + (blocked ? 'rgba(39,174,96,0.4)' : 'rgba(192,57,43,0.4)'), color: blocked ? '#2ecc71' : '#e74c3c', padding: '5px 14px', borderRadius: 5, fontSize: 12, cursor: 'pointer', fontWeight: 700, fontFamily: "'Source Sans 3', sans-serif", whiteSpace: 'nowrap' }),
+    deleteBtn: { background: 'rgba(192,57,43,0.2)', border: '1px solid rgba(192,57,43,0.4)', color: '#e74c3c', padding: '5px 14px', borderRadius: 5, fontSize: 12, cursor: 'pointer', fontWeight: 700, fontFamily: "'Source Sans 3', sans-serif", whiteSpace: 'nowrap' },
     sectionTitle: { fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 14 },
     fieldLabel: { fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 4 },
   }
@@ -161,7 +224,7 @@ export default function AdminPanel({ user, logout }) {
                     <th style={s.th}>Role</th>
                     <th style={s.th}>Access</th>
                     <th style={s.th}>Status</th>
-                    <th style={s.th}>Action</th>
+                    <th style={s.th}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -179,11 +242,19 @@ export default function AdminPanel({ user, logout }) {
                       </td>
                       <td style={s.td}><span style={{ color: u.blocked ? '#e74c3c' : '#2ecc71', fontWeight: 700, fontSize: 12 }}>{u.blocked ? '🔒 Blocked' : '✅ Active'}</span></td>
                       <td style={s.td}>
-                        {u.role !== 'admin' ? (
-                          <button style={s.blockBtn(u.blocked)} onClick={() => toggleBlock(u.username, u.blocked)}>{u.blocked ? 'Unblock' : 'Block'}</button>
-                        ) : (
-                          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>Protected</span>
-                        )}
+                        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                          {u.role !== 'admin' ? (
+                            <button style={s.blockBtn(u.blocked)} onClick={() => toggleBlock(u.username, u.blocked)}>
+                              {u.blocked ? 'Unblock' : 'Block'}
+                            </button>
+                          ) : u.username === 'admin' ? (
+                            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>Protected</span>
+                          ) : (
+                            <button style={s.deleteBtn} onClick={() => deleteUser(u.username)}>
+                              🗑 Delete
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -270,7 +341,7 @@ export default function AdminPanel({ user, logout }) {
             <div style={s.sectionTitle}>Access Level Guide</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
               {[
-                { role: 'Admin', color: '#c9a84c', items: ['MUN Toolkit home page', 'Iran research page', 'China research page', 'AI briefing (no password)', 'AI chatbot', 'Update All Sections', 'Admin panel — block/unblock/create/edit accounts'] },
+                { role: 'Admin', color: '#c9a84c', items: ['MUN Toolkit home page', 'Iran research page', 'China research page', 'AI briefing (no password)', 'AI chatbot', 'Update All Sections', 'Admin panel — block/unblock/create/edit/delete accounts'] },
                 { role: 'Plus', color: '#009EDB', items: ['MUN Toolkit home page', 'Iran research page', 'China research page', 'AI briefing (no password)', 'AI chatbot'] },
                 { role: 'Basic', color: '#555', items: ['MUN Toolkit home page', 'Iran research page — read only', 'China research page — read only', 'No AI features'] },
               ].map(({ role, color, items }) => (
@@ -287,3 +358,6 @@ export default function AdminPanel({ user, logout }) {
     </>
   )
 }
+```
+
+Two files to update on GitHub — create `pages/api/admin-delete.js` as a new file, and replace `pages/admin.js` entirely with the code above!
