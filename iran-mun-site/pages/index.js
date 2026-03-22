@@ -60,6 +60,7 @@ const COUNTRIES = [
   { name: "Islamic Republic of Iran", flag: "🇮🇷", route: '/iran', committee: 'ECOSOC', tags: ['Live Intel', 'Power Figures', 'ECOSOC Analysis', 'MUN Toolkit', 'AI Chatbot'], tagColor: '#1a5c38', btnColor: '#1a5c38', border: '#e0d8cc', bg: '#faf7f2', keywords: ['iran', 'tehran', 'khamenei', 'irgc', 'nuclear', 'sanctions', 'persian', 'shia'] },
   { name: "People's Republic of China", flag: "🇨🇳", route: '/china', committee: 'ECOSOC', tags: ['Live Intel', 'Power Figures', 'Taiwan Analysis', 'Xinjiang Briefing', 'AI Chatbot'], tagColor: '#cc0000', btnColor: '#cc0000', border: '#e8d8d8', bg: '#fff8f8', keywords: ['china', 'beijing', 'xi jinping', 'taiwan', 'xinjiang', 'belt and road', 'ccp', 'mandarin'] },
   { name: "Federal Republic of Nigeria", flag: "🇳🇬", route: '/nigeria', committee: 'ECOSOC · HRC · DISEC · UNEP', tags: ['Live Intel', 'Power Figures', 'Security Analysis', 'MUN Toolkit', 'AI Chatbot'], tagColor: '#008751', btnColor: '#008751', border: '#d8e8d8', bg: '#f8fff8', keywords: ['nigeria', 'abuja', 'lagos', 'tinubu', 'boko haram', 'niger delta', 'naira', 'ecowas', 'africa'] },
+  { name: "French Republic", flag: "🇫🇷", route: '/france', committee: 'ECOSOC · HRC · DISEC · UNEP · P5', tags: ['Live Intel', 'Power Figures', 'Nuclear Strategy', 'MUN Toolkit', 'AI Chatbot'], tagColor: '#00209F', btnColor: '#00209F', border: '#d8d8f0', bg: '#f8f8ff', keywords: ['france', 'paris', 'macron', 'nato', 'nuclear', 'p5', 'veto', 'eu', 'europe', 'francophonie', 'sahel'] },
 ]
 
 const MADE_BY = (
@@ -333,7 +334,7 @@ export default function Home({ user, logout }) {
                   <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 14, color: '#999' }}>🔍</span>
                   <input
                     type="text"
-                    placeholder="Search countries — Iran, China, Nigeria, ECOSOC..."
+                    placeholder="Search countries — Iran, China, Nigeria, France, ECOSOC..."
                     value={countrySearch}
                     onChange={e => setCountrySearch(e.target.value)}
                     style={{ width: '100%', padding: '10px 12px 10px 36px', border: '1px solid #dde3ea', borderRadius: 6, fontSize: 13, outline: 'none', fontFamily: "'Source Sans 3', sans-serif", color: '#1a1a1a', background: '#f8fafc', boxSizing: 'border-box' }}
