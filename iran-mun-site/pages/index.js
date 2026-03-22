@@ -50,31 +50,25 @@ const RESOLUTION_STARTERS = {
 }
 
 const COMMITTEES = [
-  {
-    name: "HRC",
-    full: "Human Rights Council",
-    desc: "Promotes and protects human rights around the globe. Addresses situations of human rights violations and makes recommendations. 47 member states elected by the General Assembly.",
-    color: "#e67e22"
-  },
-  {
-    name: "ECOSOC",
-    full: "Economic and Social Council",
-    desc: "Coordinates the economic, social, and related work of the UN and its specialised agencies. 54 rotating member states.",
-    color: "#1a6fa0"
-  },
-  {
-    name: "DISEC",
-    full: "Disarmament and International Security Committee",
-    desc: "First Committee of the General Assembly. Deals with disarmament, global challenges, and threats to international peace and security.",
-    color: "#1a5c38"
-  },
-  {
-    name: "UNEP",
-    full: "United Nations Environment Programme",
-    desc: "The leading global environmental authority. Sets the global environmental agenda and promotes sustainable development within the UN system.",
-    color: "#27ae60"
-  },
+  { name: "HRC", full: "Human Rights Council", desc: "Promotes and protects human rights around the globe. Addresses situations of human rights violations and makes recommendations. 47 member states elected by the General Assembly.", color: "#e67e22" },
+  { name: "ECOSOC", full: "Economic and Social Council", desc: "Coordinates the economic, social, and related work of the UN and its specialised agencies. 54 rotating member states.", color: "#1a6fa0" },
+  { name: "DISEC", full: "Disarmament and International Security Committee", desc: "First Committee of the General Assembly. Deals with disarmament, global challenges, and threats to international peace and security.", color: "#1a5c38" },
+  { name: "UNEP", full: "United Nations Environment Programme", desc: "The leading global environmental authority. Sets the global environmental agenda and promotes sustainable development within the UN system.", color: "#27ae60" },
 ]
+
+const MADE_BY = (
+  <div style={{
+    position: 'fixed', top: 10, left: 10, zIndex: 9999,
+    background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)',
+    border: '1px solid rgba(255,255,255,0.15)',
+    color: 'rgba(255,255,255,0.7)', fontSize: 11, fontWeight: 600,
+    padding: '4px 10px', borderRadius: 20,
+    fontFamily: "'Source Sans 3', sans-serif", letterSpacing: 0.5,
+    pointerEvents: 'none',
+  }}>
+    ✦ Made by Luquinha
+  </div>
+)
 
 export default function Home({ user, logout }) {
   const router = useRouter()
@@ -89,13 +83,10 @@ export default function Home({ user, logout }) {
       </Head>
 
       <div style={{ fontFamily: "'Source Sans 3', sans-serif", background: '#f4f6f9', minHeight: '100vh', color: '#1a1a1a' }}>
+        {MADE_BY}
 
         {/* UN HEADER */}
-        <div style={{
-          background: 'linear-gradient(135deg, #009EDB 0%, #0077b6 100%)',
-          color: 'white', padding: '48px 40px 40px',
-          position: 'relative', overflow: 'hidden'
-        }}>
+        <div style={{ background: 'linear-gradient(135deg, #009EDB 0%, #0077b6 100%)', color: 'white', padding: '48px 40px 40px', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: -60, right: -60, width: 300, height: 300, borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
           <div style={{ position: 'absolute', bottom: -80, left: -40, width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }} />
           <div style={{ maxWidth: 1000, margin: '0 auto', position: 'relative', zIndex: 1 }}>
@@ -133,33 +124,15 @@ export default function Home({ user, logout }) {
                 background: i === 0 ? 'rgba(255,255,255,0.15)' : 'none',
                 border: 'none', color: i === 0 ? 'white' : 'rgba(255,255,255,0.6)',
                 padding: '8px 14px', borderRadius: 3, cursor: 'pointer',
-                fontSize: 12, fontWeight: 600, fontFamily: "'Source Sans 3', sans-serif",
-                letterSpacing: 0.3,
+                fontSize: 12, fontWeight: 600, fontFamily: "'Source Sans 3', sans-serif", letterSpacing: 0.3,
               }}
               onClick={() => {
                 const ids = ['home', 'procedures', 'resolutions', 'committees', 'countries']
                 document.getElementById(ids[i])?.scrollIntoView({ behavior: 'smooth' })
-              }}
-              >{item}</button>
+              }}>{item}</button>
             ))}
             {user?.role === 'admin' && (
-              <button
-                onClick={() => router.push('/admin')}
-                style={{
-                  marginLeft: 'auto',
-                  background: 'rgba(201,168,76,0.2)',
-                  border: '1px solid rgba(201,168,76,0.5)',
-                  color: '#c9a84c',
-                  padding: '6px 14px',
-                  borderRadius: 3,
-                  cursor: 'pointer',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  fontFamily: "'Source Sans 3', sans-serif",
-                  letterSpacing: 0.3,
-                }}>
-                ⚙️ Admin
-              </button>
+              <button onClick={() => router.push('/admin')} style={{ marginLeft: 'auto', background: 'rgba(201,168,76,0.2)', border: '1px solid rgba(201,168,76,0.5)', color: '#c9a84c', padding: '6px 14px', borderRadius: 3, cursor: 'pointer', fontSize: 12, fontWeight: 700, fontFamily: "'Source Sans 3', sans-serif", letterSpacing: 0.3 }}>⚙️ Admin</button>
             )}
           </div>
         </div>
@@ -179,8 +152,7 @@ export default function Home({ user, logout }) {
                 <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Committee Guides</div>
                 <div style={{ fontSize: 13, color: '#666', lineHeight: 1.5 }}>HRC, ECOSOC, DISEC, UNEP — mandates, procedures, and key differences.</div>
               </div>
-              <div style={{ background: 'white', border: '1px solid #dde3ea', borderRadius: 4, padding: 20, borderTop: '3px solid #c9a84c', cursor: 'pointer' }}
-                onClick={() => router.push('/iran')}>
+              <div style={{ background: 'white', border: '1px solid #dde3ea', borderRadius: 4, padding: 20, borderTop: '3px solid #c9a84c', cursor: 'pointer' }} onClick={() => router.push('/iran')}>
                 <div style={{ fontSize: 24, marginBottom: 8 }}>🇮🇷</div>
                 <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Iran Research Page</div>
                 <div style={{ fontSize: 13, color: '#666', lineHeight: 1.5 }}>Full country research — live intel, power figures, ECOSOC analysis, MUN toolkit.</div>
@@ -193,21 +165,11 @@ export default function Home({ user, logout }) {
 
           {/* PROCEDURES */}
           <div id="procedures" style={{ marginBottom: 32 }}>
-            <div style={{ background: '#005f8e', color: '#7dd4f8', padding: '10px 20px', fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', fontWeight: 700, borderRadius: '4px 4px 0 0' }}>
-              📜 MUN Procedures
-            </div>
+            <div style={{ background: '#005f8e', color: '#7dd4f8', padding: '10px 20px', fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', fontWeight: 700, borderRadius: '4px 4px 0 0' }}>📜 MUN Procedures</div>
             <div style={{ background: 'white', border: '1px solid #dde3ea', borderBottom: 'none' }}>
               <div style={{ display: 'flex', borderBottom: '1px solid #dde3ea' }}>
                 {MUN_PROCEDURES.map((cat, i) => (
-                  <button key={i}
-                    onClick={() => setActiveProc(i)}
-                    style={{
-                      flex: 1, padding: '12px 8px', border: 'none', cursor: 'pointer',
-                      background: activeProc === i ? '#f0f8ff' : 'white',
-                      borderBottom: activeProc === i ? '2px solid #009EDB' : '2px solid transparent',
-                      fontSize: 13, fontWeight: 600, color: activeProc === i ? '#009EDB' : '#666',
-                      fontFamily: "'Source Sans 3', sans-serif",
-                    }}>
+                  <button key={i} onClick={() => setActiveProc(i)} style={{ flex: 1, padding: '12px 8px', border: 'none', cursor: 'pointer', background: activeProc === i ? '#f0f8ff' : 'white', borderBottom: activeProc === i ? '2px solid #009EDB' : '2px solid transparent', fontSize: 13, fontWeight: 600, color: activeProc === i ? '#009EDB' : '#666', fontFamily: "'Source Sans 3', sans-serif" }}>
                     {cat.emoji} {cat.category}
                   </button>
                 ))}
@@ -241,9 +203,7 @@ export default function Home({ user, logout }) {
 
           {/* RESOLUTION WRITING */}
           <div id="resolutions" style={{ marginBottom: 32 }}>
-            <div style={{ background: '#005f8e', color: '#7dd4f8', padding: '10px 20px', fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', fontWeight: 700, borderRadius: '4px 4px 0 0' }}>
-              📄 Resolution Writing
-            </div>
+            <div style={{ background: '#005f8e', color: '#7dd4f8', padding: '10px 20px', fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', fontWeight: 700, borderRadius: '4px 4px 0 0' }}>📄 Resolution Writing</div>
             <div style={{ background: 'white', border: '1px solid #dde3ea', padding: 24 }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
                 <div>
@@ -282,9 +242,7 @@ export default function Home({ user, logout }) {
 
           {/* COMMITTEES */}
           <div id="committees" style={{ marginBottom: 32 }}>
-            <div style={{ background: '#005f8e', color: '#7dd4f8', padding: '10px 20px', fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', fontWeight: 700, borderRadius: '4px 4px 0 0' }}>
-              🌐 UN Committees Overview
-            </div>
+            <div style={{ background: '#005f8e', color: '#7dd4f8', padding: '10px 20px', fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', fontWeight: 700, borderRadius: '4px 4px 0 0' }}>🌐 UN Committees Overview</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: '#dde3ea' }}>
               {COMMITTEES.map(c => (
                 <div key={c.name} style={{ background: 'white', padding: 20 }}>
@@ -300,20 +258,9 @@ export default function Home({ user, logout }) {
 
           {/* COUNTRY PAGES */}
           <div id="countries" style={{ marginBottom: 32 }}>
-            <div style={{ background: '#005f8e', color: '#7dd4f8', padding: '10px 20px', fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', fontWeight: 700, borderRadius: '4px 4px 0 0' }}>
-              🗺️ Country Research Pages
-            </div>
+            <div style={{ background: '#005f8e', color: '#7dd4f8', padding: '10px 20px', fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', fontWeight: 700, borderRadius: '4px 4px 0 0' }}>🗺️ Country Research Pages</div>
             <div style={{ background: 'white', border: '1px solid #dde3ea', padding: 24 }}>
-              <div
-                onClick={() => (user?.role === 'viewer') ? null : router.push('/iran')}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 20,
-                  padding: 20, border: '1px solid #e0d8cc', borderRadius: 4,
-                  background: '#faf7f2', cursor: user?.role === 'viewer' ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.15s', maxWidth: 500,
-                  opacity: user?.role === 'viewer' ? 0.6 : 1,
-                }}
-              >
+              <div onClick={() => (user?.role === 'viewer') ? null : router.push('/iran')} style={{ display: 'flex', alignItems: 'center', gap: 20, padding: 20, border: '1px solid #e0d8cc', borderRadius: 4, background: '#faf7f2', cursor: user?.role === 'viewer' ? 'not-allowed' : 'pointer', transition: 'all 0.15s', maxWidth: 500, opacity: user?.role === 'viewer' ? 0.6 : 1 }}>
                 <div style={{ fontSize: 48 }}>🇮🇷</div>
                 <div>
                   <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700 }}>Islamic Republic of Iran</div>
@@ -324,24 +271,11 @@ export default function Home({ user, logout }) {
                     ))}
                   </div>
                   <div style={{ marginTop: 12 }}>
-                    {user?.role === 'viewer' ? (
-                      <span style={{ background: '#f0f0f0', color: '#888', padding: '6px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>🔒 Delegate Access Required</span>
-                    ) : (
-                      <span style={{ background: '#1a5c38', color: 'white', padding: '6px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>→ Open Iran Research Page</span>
-                    )}
+                    {user?.role === 'viewer' ? <span style={{ background: '#f0f0f0', color: '#888', padding: '6px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>🔒 Delegate Access Required</span> : <span style={{ background: '#1a5c38', color: 'white', padding: '6px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>→ Open Iran Research Page</span>}
                   </div>
                 </div>
               </div>
-              <div
-                onClick={() => (user?.role === 'viewer') ? null : router.push('/china')}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 20,
-                  padding: 20, border: '1px solid #e8d8d8', borderRadius: 4,
-                  background: '#fff8f8', cursor: user?.role === 'viewer' ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.15s', maxWidth: 500, marginTop: 12,
-                  opacity: user?.role === 'viewer' ? 0.6 : 1,
-                }}
-              >
+              <div onClick={() => (user?.role === 'viewer') ? null : router.push('/china')} style={{ display: 'flex', alignItems: 'center', gap: 20, padding: 20, border: '1px solid #e8d8d8', borderRadius: 4, background: '#fff8f8', cursor: user?.role === 'viewer' ? 'not-allowed' : 'pointer', transition: 'all 0.15s', maxWidth: 500, marginTop: 12, opacity: user?.role === 'viewer' ? 0.6 : 1 }}>
                 <div style={{ fontSize: 48 }}>🇨🇳</div>
                 <div>
                   <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700 }}>People's Republic of China</div>
@@ -352,17 +286,11 @@ export default function Home({ user, logout }) {
                     ))}
                   </div>
                   <div style={{ marginTop: 12 }}>
-                    {user?.role === 'viewer' ? (
-                      <span style={{ background: '#f0f0f0', color: '#888', padding: '6px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>🔒 Delegate Access Required</span>
-                    ) : (
-                      <span style={{ background: '#cc0000', color: 'white', padding: '6px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>→ Open China Research Page</span>
-                    )}
+                    {user?.role === 'viewer' ? <span style={{ background: '#f0f0f0', color: '#888', padding: '6px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>🔒 Delegate Access Required</span> : <span style={{ background: '#cc0000', color: 'white', padding: '6px 14px', borderRadius: 3, fontSize: 12, fontWeight: 700 }}>→ Open China Research Page</span>}
                   </div>
                 </div>
               </div>
-              <div style={{ marginTop: 14, padding: 14, background: '#f8fafc', border: '1px dashed #dde3ea', borderRadius: 4, fontSize: 12, color: '#999', fontStyle: 'italic' }}>
-                More country pages coming soon.
-              </div>
+              <div style={{ marginTop: 14, padding: 14, background: '#f8fafc', border: '1px dashed #dde3ea', borderRadius: 4, fontSize: 12, color: '#999', fontStyle: 'italic' }}>More country pages coming soon.</div>
             </div>
           </div>
 
