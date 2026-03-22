@@ -23,14 +23,35 @@ export default async function handler(req, res) {
     return res.status(403).json({ error: 'Cannot delete the main admin account' })
   }
 
-  const isHardcoded = USERS.find(u => u.username === username)
+  const dynamicUsers = (await redis.get('dynamicUsers')) || []
+  const renamedUsers = (await redis.get('renamedUsers')) || {}
+
+  // Find by effective (display) username
+  const match = [...USERS, ...dynamicUsers].find(u => {
+    const effective = renamedUsers[u.username]?.username || u.username
+    return effective.toLowerCase() === username.toLowerCase()
+  })
+
+  if (!match) return res.status(404).json({ error: `User "${username}" not found` })
+
+  const originalKey = match.username
+
+  // Only dynamic users can be deleted
+  const isHardcoded = USERS.find(u => u.username === originalKey)
   if (isHardcoded) {
     return res.status(403).json({ error: 'Cannot delete hardcoded accounts — use block instead' })
   }
 
-  const dynamicUsers = (await redis.get('dynamicUsers')) || []
-  const filtered = dynamicUsers.filter(u => u.username !== username)
+  // Remove from dynamic users
+  const filtered = dynamicUsers.filter(u => u.username !== originalKey)
   await redis.set('dynamicUsers', filtered)
+
+  // Also clean up any renames and blocks for this user
+  if (renamedUsers[originalKey]) {
+    delete renamedUsers[originalKey]
+    await redis.set('renamedUsers', renamedUsers)
+  }
+  await redis.srem('blockedUsers', originalKey)
 
   return res.status(200).json({ success: true })
 }
