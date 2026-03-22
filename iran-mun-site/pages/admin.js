@@ -3,16 +3,19 @@ import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 
+const PROTECTED_ADMIN = 'admin' // 👈 change if needed
+
 export default function AdminPanel({ user, logout }) {
   const router = useRouter()
+
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [actionStatus, setActionStatus] = useState('')
   const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')
 
-  const [createForm, setCreateForm] = useState({ username: '', password: '', role: 'basic', name: '' })
-  const [editForm, setEditForm] = useState({ username: '', newUsername: '', newName: '', newPassword: '' })
+  const [createForm, setCreateForm] = useState({ username:'', password:'', role:'basic', name:'' })
+  const [editForm, setEditForm] = useState({ username:'', newUsername:'', newName:'', newPassword:'' })
 
   useEffect(() => {
     if (!user) return
@@ -25,67 +28,85 @@ export default function AdminPanel({ user, logout }) {
     try {
       const token = localStorage.getItem('mun_token')
       const res = await fetch('/api/admin-users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token })
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({ token })
       })
       const data = await res.json()
       if (data.users) setUsers(data.users)
-    } catch {
-      setActionStatus('Failed to load users.')
     } finally {
       setLoading(false)
     }
   }
 
   const toggleBlock = async (username, blocked) => {
+    if (username === PROTECTED_ADMIN) {
+      setActionStatus('❌ Cannot modify main admin')
+      return
+    }
+
     const token = localStorage.getItem('mun_token')
     await fetch('/api/admin-block', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, username, blocked: !blocked })
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ token, username, blocked: !blocked })
     })
     fetchUsers()
   }
 
   const deleteUser = async (username) => {
+    if (username === PROTECTED_ADMIN) {
+      setActionStatus('❌ Cannot delete main admin')
+      return
+    }
+
     if (!confirm(`Delete "${username}"?`)) return
+
     const token = localStorage.getItem('mun_token')
     await fetch('/api/admin-delete', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, username })
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ token, username })
     })
     fetchUsers()
   }
 
   const createUser = async () => {
     if (!createForm.username || !createForm.password) {
-      setActionStatus('Username & password required')
+      setActionStatus('⚠️ Username & password required')
       return
     }
+
     const token = localStorage.getItem('mun_token')
     await fetch('/api/admin-create', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, ...createForm })
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ token, ...createForm })
     })
-    setCreateForm({ username: '', password: '', role: 'basic', name: '' })
+
+    setCreateForm({ username:'', password:'', role:'basic', name:'' })
     fetchUsers()
   }
 
   const editUser = async () => {
     if (!editForm.username) {
-      setActionStatus('Enter current username')
+      setActionStatus('⚠️ Enter current username')
       return
     }
+
+    if (editForm.username === PROTECTED_ADMIN) {
+      setActionStatus('❌ Cannot edit main admin')
+      return
+    }
+
     const token = localStorage.getItem('mun_token')
     await fetch('/api/admin-edit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, ...editForm })
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ token, ...editForm })
     })
-    setEditForm({ username: '', newUsername: '', newName: '', newPassword: '' })
+
+    setEditForm({ username:'', newUsername:'', newName:'', newPassword:'' })
     fetchUsers()
   }
 
@@ -95,39 +116,85 @@ export default function AdminPanel({ user, logout }) {
     return true
   })
 
+  const ROLE_COLORS = {
+    admin: '#c9a84c',
+    plus: '#009EDB',
+    basic: '#555'
+  }
+
   const s = {
-    page: { minHeight: '100vh', background: '#0a1628', color: 'white', fontFamily: 'sans-serif' },
-    header: { background: 'linear-gradient(135deg,#003a6b,#005f8e)', padding: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-    content: { maxWidth: 1100, margin: '0 auto', padding: 20 },
-    card: { background: 'rgba(255,255,255,0.05)', padding: 20, borderRadius: 8, marginBottom: 20 },
-    input: { padding: 8, marginRight: 8, borderRadius: 6, border: 'none' },
-    btn: { padding: '6px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', marginRight: 5 },
-    table: { width: '100%', borderCollapse: 'collapse' },
-    th: { textAlign: 'left', padding: 10, borderBottom: '1px solid #333' },
-    td: { padding: 10, borderBottom: '1px solid #222' }
+    page: {
+      minHeight:'100vh',
+      background:'#0a1628',
+      color:'white',
+      fontFamily:"'Source Sans 3', sans-serif"
+    },
+    header:{
+      background:'linear-gradient(135deg,#003a6b,#005f8e)',
+      padding:'24px 32px',
+      display:'flex',
+      justifyContent:'space-between',
+      alignItems:'center'
+    },
+    content:{
+      maxWidth:1100,
+      margin:'0 auto',
+      padding:24
+    },
+    card:{
+      background:'rgba(255,255,255,0.04)',
+      border:'1px solid rgba(255,255,255,0.08)',
+      borderRadius:8,
+      padding:20,
+      marginBottom:20
+    },
+    input:{
+      background:'rgba(255,255,255,0.06)',
+      border:'1px solid rgba(255,255,255,0.12)',
+      color:'white',
+      padding:'8px 12px',
+      borderRadius:6,
+      marginRight:8
+    },
+    btn:{
+      padding:'6px 14px',
+      borderRadius:6,
+      border:'none',
+      cursor:'pointer',
+      fontWeight:600
+    },
+    table:{ width:'100%', borderCollapse:'collapse' },
+    th:{ padding:10, textAlign:'left', fontSize:12, opacity:0.6 },
+    td:{ padding:10, borderTop:'1px solid rgba(255,255,255,0.05)' }
   }
 
   if (!user || user.role !== 'admin') return null
 
   return (
     <>
-      <Head><title>Admin Panel</title></Head>
+      <Head><title>Admin Panel — MUN Toolkit</title></Head>
 
       <div style={s.page}>
         <div style={s.header}>
-          <h2>🇺🇳 MUN Toolkit — Admin</h2>
-          <button onClick={logout}>Sign Out</button>
+          <h2>🇺🇳 MUN Toolkit — Admin Panel</h2>
+          <button onClick={logout} style={s.btn}>Sign Out</button>
         </div>
 
         <div style={s.content}>
 
+          {actionStatus && (
+            <div style={{marginBottom:15, opacity:0.8}}>
+              {actionStatus}
+            </div>
+          )}
+
           <div style={s.card}>
             <h3>Users ({filteredUsers.length})</h3>
 
-            <input placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} style={s.input} />
+            <input placeholder="Search..." value={search} onChange={e=>setSearch(e.target.value)} style={s.input}/>
 
-            {['all','admin','plus','basic'].map(f => (
-              <button key={f} onClick={() => setFilter(f)} style={s.btn}>{f}</button>
+            {['all','admin','plus','basic'].map(f=>(
+              <button key={f} onClick={()=>setFilter(f)} style={s.btn}>{f}</button>
             ))}
 
             {loading ? <p>Loading...</p> : (
@@ -141,16 +208,31 @@ export default function AdminPanel({ user, logout }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredUsers.map(u => (
+                  {filteredUsers.map(u=>(
                     <tr key={u.username}>
                       <td style={s.td}>{u.username}</td>
-                      <td style={s.td}>{u.role}</td>
-                      <td style={s.td}>{u.blocked ? 'Blocked' : 'Active'}</td>
                       <td style={s.td}>
-                        <button onClick={() => toggleBlock(u.username,u.blocked)} style={s.btn}>
-                          {u.blocked ? 'Unblock' : 'Block'}
-                        </button>
-                        <button onClick={() => deleteUser(u.username)} style={s.btn}>Delete</button>
+                        <span style={{
+                          background: ROLE_COLORS[u.role]+'22',
+                          padding:'2px 8px',
+                          borderRadius:4,
+                          color:ROLE_COLORS[u.role]
+                        }}>{u.role}</span>
+                      </td>
+                      <td style={s.td}>{u.blocked ? '🔒 Blocked' : '✅ Active'}</td>
+                      <td style={s.td}>
+                        {u.username === PROTECTED_ADMIN ? (
+                          <span style={{opacity:0.3}}>Protected</span>
+                        ) : (
+                          <>
+                            <button onClick={()=>toggleBlock(u.username,u.blocked)} style={s.btn}>
+                              {u.blocked ? 'Unblock' : 'Block'}
+                            </button>
+                            <button onClick={()=>deleteUser(u.username)} style={s.btn}>
+                              Delete
+                            </button>
+                          </>
+                        )}
                       </td>
                     </tr>
                   ))}
