@@ -19,34 +19,38 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Invalid token' })
   }
 
-  if (username === 'admin') {
+  if (username === 'admin' || username === 'luquinha') {
     return res.status(403).json({ error: 'Cannot delete the main admin account' })
   }
 
   const dynamicUsers = (await redis.get('dynamicUsers')) || []
   const renamedUsers = (await redis.get('renamedUsers')) || {}
 
-  // Find by effective (display) username
-  const match = [...USERS, ...dynamicUsers].find(u => {
+  // Find by effective (display) username — search dynamic users first
+  const dynMatch = dynamicUsers.find(u => {
     const effective = renamedUsers[u.username]?.username || u.username
     return effective.toLowerCase() === username.toLowerCase()
   })
 
-  if (!match) return res.status(404).json({ error: `User "${username}" not found` })
-
-  const originalKey = match.username
-
-  // Only dynamic users can be deleted
-  const isHardcoded = USERS.find(u => u.username === originalKey)
-  if (isHardcoded) {
-    return res.status(403).json({ error: 'Cannot delete hardcoded accounts — use block instead' })
+  // If not found in dynamic users, check if it's a hardcoded user being blocked instead
+  if (!dynMatch) {
+    const hardcodedMatch = USERS.find(u => {
+      const effective = renamedUsers[u.username]?.username || u.username
+      return effective.toLowerCase() === username.toLowerCase()
+    })
+    if (hardcodedMatch) {
+      return res.status(403).json({ error: 'Hardcoded accounts cannot be deleted — use Block instead' })
+    }
+    return res.status(404).json({ error: `User "${username}" not found` })
   }
+
+  const originalKey = dynMatch.username
 
   // Remove from dynamic users
   const filtered = dynamicUsers.filter(u => u.username !== originalKey)
   await redis.set('dynamicUsers', filtered)
 
-  // Also clean up any renames and blocks for this user
+  // Clean up renames and blocks
   if (renamedUsers[originalKey]) {
     delete renamedUsers[originalKey]
     await redis.set('renamedUsers', renamedUsers)
