@@ -305,10 +305,11 @@ export default function NigeriaPage({ dynamic, generatedAt, user, logout }) {
           <div className="user-bar">
             <span className="user-bar-name">👤 {user.name || user.username}<span className={`user-role-badge role-${user.role}`}>{user.role}</span></span>
             <div style={{ display: 'flex', gap: 8 }}>
-  <button onClick={() => router.push('/')} style={{ background: 'none', border: '1px solid #333', color: 'rgba(255,255,255,0.4)', padding: '4px 12px', borderRadius: 3, fontSize: 11, cursor: 'pointer', fontFamily: "'Source Sans 3', sans-serif" }}>🇺🇳 MUN Toolkit</button>
-  {isAdmin && <button onClick={() => router.push('/admin')} style={{ background: 'rgba(201,168,76,0.15)', border: '1px solid #c9a84c', color: '#c9a84c', padding: '4px 12px', borderRadius: 3, fontSize: 11, cursor: 'pointer', fontFamily: "'Source Sans 3', sans-serif" }}>⚙️ Admin</button>}
-  <button className="user-logout" onClick={logout}>Sign Out</button>
-</div>
+              <button onClick={() => router.push('/')} style={{ background: 'none', border: '1px solid #333', color: 'rgba(255,255,255,0.4)', padding: '4px 12px', borderRadius: 3, fontSize: 11, cursor: 'pointer', fontFamily: "'Source Sans 3', sans-serif" }}>🇺🇳 MUN Toolkit</button>
+              {isAdmin && <button onClick={() => router.push('/admin')} style={{ background: 'rgba(201,168,76,0.15)', border: '1px solid #c9a84c', color: '#c9a84c', padding: '4px 12px', borderRadius: 3, fontSize: 11, cursor: 'pointer', fontFamily: "'Source Sans 3', sans-serif" }}>⚙️ Admin</button>}
+              <button className="user-logout" onClick={logout}>Sign Out</button>
+            </div>
+          </div>
         )}
 
         {/* STATS BAR */}
