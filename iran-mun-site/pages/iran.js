@@ -390,7 +390,7 @@ export default function IranPage({ dynamic, generatedAt, user, logout }) {
             {d.last_updated && <div style={{ fontSize: 11, color: 'var(--light)', marginTop: 12, fontStyle: 'italic' }}>Generated: {d.last_updated}</div>}
           </Card>
           <Card emoji="📰" title="Live News Feed" fullWidth><NewsSection news={news} loading={newsLoading} /></Card>
-          {canBriefing ? <div className="full-width"><AIBriefing briefing={briefing} loading={briefingLoading} /></div> : <div className="full-width"><div className="access-blocked">🔒 AI Intelligence Briefing is available to <strong>Plus and Admin users only.</div></div>}
+          {canBriefing ? <div className="full-width"><AIBriefing briefing={briefing} loading={briefingLoading} /></div> : <div className="full-width"><div className="access-blocked">🔒 AI Intelligence Briefing is available to <strong>Plus</strong> and <strong>Admin</strong> users only.</div></div>}
         </div>
 
         {/* UPDATE PANEL */}
