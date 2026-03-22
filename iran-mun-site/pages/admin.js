@@ -1,3 +1,4 @@
+// pages/admin.js — Admin Panel (admin role only)
 Here are both files in full:
 
 ---
