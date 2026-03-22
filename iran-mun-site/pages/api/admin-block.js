@@ -19,18 +19,15 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Invalid token' })
   }
 
-  // Find the original key for this user — could be a renamed or dynamic user
   const dynamicUsers = (await redis.get('dynamicUsers')) || []
   const renamedUsers = (await redis.get('renamedUsers')) || {}
   const allUsers = [...USERS, ...dynamicUsers]
 
-  // Find by effective (display) username
   const match = allUsers.find(u => {
     const effective = renamedUsers[u.username]?.username || u.username
     return effective.toLowerCase() === username.toLowerCase()
   })
 
-  // Use original key for blocking so admin-users.js can find it
   const originalKey = match ? match.username : username
 
   if (blocked) {
