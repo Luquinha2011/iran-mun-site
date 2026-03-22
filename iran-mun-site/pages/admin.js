@@ -3,6 +3,18 @@ import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 
+const BADGE = (
+  <div style={{
+    position: 'fixed', top: 10, left: 10, zIndex: 9999,
+    background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)',
+    border: '1px solid rgba(255,255,255,0.15)',
+    color: 'rgba(255,255,255,0.7)', fontSize: 11, fontWeight: 600,
+    padding: '4px 10px', borderRadius: 20,
+    fontFamily: "'Source Sans 3', sans-serif", letterSpacing: 0.5,
+    pointerEvents: 'none',
+  }}>✦ Made by Luquinha</div>
+)
+
 export default function AdminPanel({ user, logout }) {
   const router = useRouter()
   const [users, setUsers] = useState([])
@@ -23,11 +35,7 @@ export default function AdminPanel({ user, logout }) {
     setLoading(true)
     try {
       const token = localStorage.getItem('mun_token')
-      const res = await fetch('/api/admin-users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token })
-      })
+      const res = await fetch('/api/admin-users', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token }) })
       const data = await res.json()
       if (data.users) setUsers(data.users)
     } catch { setActionStatus('Failed to load users.') }
@@ -38,18 +46,10 @@ export default function AdminPanel({ user, logout }) {
     setActionStatus(`${currentlyBlocked ? 'Unblocking' : 'Blocking'} ${username}...`)
     try {
       const token = localStorage.getItem('mun_token')
-      const res = await fetch('/api/admin-block', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, username, blocked: !currentlyBlocked })
-      })
+      const res = await fetch('/api/admin-block', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, username, blocked: !currentlyBlocked }) })
       const data = await res.json()
-      if (data.success) {
-        setUsers(prev => prev.map(u => u.username === username ? { ...u, blocked: !currentlyBlocked } : u))
-        setActionStatus(`${username} has been ${!currentlyBlocked ? 'blocked' : 'unblocked'}.`)
-      } else {
-        setActionStatus(data.error || 'Action failed.')
-      }
+      if (data.success) { setUsers(prev => prev.map(u => u.username === username ? { ...u, blocked: !currentlyBlocked } : u)); setActionStatus(`${username} has been ${!currentlyBlocked ? 'blocked' : 'unblocked'}.`) }
+      else setActionStatus(data.error || 'Action failed.')
     } catch { setActionStatus('Request failed.') }
   }
 
@@ -95,6 +95,7 @@ export default function AdminPanel({ user, logout }) {
     <>
       <Head><title>Admin Panel — MUN Toolkit</title></Head>
       <div style={s.page}>
+        {BADGE}
 
         {/* HEADER */}
         <div style={s.header}>
@@ -149,7 +150,6 @@ export default function AdminPanel({ user, logout }) {
                 <button onClick={fetchUsers} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.5)', padding: '6px 14px', borderRadius: 6, fontSize: 12, cursor: 'pointer', fontFamily: "'Source Sans 3', sans-serif" }}>↻ Refresh</button>
               </div>
             </div>
-
             {loading ? (
               <div style={{ textAlign: 'center', padding: 40, color: 'rgba(255,255,255,0.3)' }}>Loading users...</div>
             ) : (
@@ -169,11 +169,7 @@ export default function AdminPanel({ user, logout }) {
                     <tr key={u.username} style={{ opacity: u.blocked ? 0.6 : 1 }}>
                       <td style={s.td}><span style={{ fontFamily: 'monospace', fontSize: 13, color: 'rgba(255,255,255,0.8)' }}>{u.username}</span></td>
                       <td style={s.td}><span style={{ color: 'rgba(255,255,255,0.6)' }}>{u.name}</span></td>
-                      <td style={s.td}>
-                        <span style={{ background: ROLE_COLORS[u.role] + '22', border: `1px solid ${ROLE_COLORS[u.role]}44`, color: ROLE_COLORS[u.role], padding: '2px 10px', borderRadius: 4, fontSize: 11, fontWeight: 700, letterSpacing: 0.5 }}>
-                          {ROLE_LABELS[u.role]}
-                        </span>
-                      </td>
+                      <td style={s.td}><span style={{ background: ROLE_COLORS[u.role] + '22', border: `1px solid ${ROLE_COLORS[u.role]}44`, color: ROLE_COLORS[u.role], padding: '2px 10px', borderRadius: 4, fontSize: 11, fontWeight: 700, letterSpacing: 0.5 }}>{ROLE_LABELS[u.role]}</span></td>
                       <td style={s.td}>
                         <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>
                           {u.role === 'admin' && '✅ All pages · AI features · Admin panel'}
@@ -181,16 +177,10 @@ export default function AdminPanel({ user, logout }) {
                           {u.role === 'basic' && '✅ Iran · China · Read only'}
                         </div>
                       </td>
-                      <td style={s.td}>
-                        <span style={{ color: u.blocked ? '#e74c3c' : '#2ecc71', fontWeight: 700, fontSize: 12 }}>
-                          {u.blocked ? '🔒 Blocked' : '✅ Active'}
-                        </span>
-                      </td>
+                      <td style={s.td}><span style={{ color: u.blocked ? '#e74c3c' : '#2ecc71', fontWeight: 700, fontSize: 12 }}>{u.blocked ? '🔒 Blocked' : '✅ Active'}</span></td>
                       <td style={s.td}>
                         {u.role !== 'admin' ? (
-                          <button style={s.blockBtn(u.blocked)} onClick={() => toggleBlock(u.username, u.blocked)}>
-                            {u.blocked ? 'Unblock' : 'Block'}
-                          </button>
+                          <button style={s.blockBtn(u.blocked)} onClick={() => toggleBlock(u.username, u.blocked)}>{u.blocked ? 'Unblock' : 'Block'}</button>
                         ) : (
                           <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>Protected</span>
                         )}
@@ -213,26 +203,18 @@ export default function AdminPanel({ user, logout }) {
               ].map(({ label, key, type, width }) => (
                 <div key={key}>
                   <div style={s.fieldLabel}>{label}</div>
-                  <input
-                    style={{ ...s.input, width }}
-                    type={type}
-                    placeholder={label.toLowerCase()}
-                    value={createForm[key]}
-                    onChange={e => setCreateForm(p => ({ ...p, [key]: e.target.value }))}
-                  />
+                  <input style={{ ...s.input, width }} type={type} placeholder={label.toLowerCase()} value={createForm[key]} onChange={e => setCreateForm(p => ({ ...p, [key]: e.target.value }))} />
                 </div>
               ))}
               <div>
                 <div style={s.fieldLabel}>Role</div>
-                <select style={{ ...s.input, width: 110 }} value={createForm.role}
-                  onChange={e => setCreateForm(p => ({ ...p, role: e.target.value }))}>
+                <select style={{ ...s.input, width: 110 }} value={createForm.role} onChange={e => setCreateForm(p => ({ ...p, role: e.target.value }))}>
                   <option value="basic">Basic</option>
                   <option value="plus">Plus</option>
                   <option value="admin">Admin</option>
                 </select>
               </div>
-              <button
-                style={{ background: 'rgba(39,174,96,0.2)', border: '1px solid rgba(39,174,96,0.4)', color: '#2ecc71', padding: '8px 20px', borderRadius: 6, fontSize: 13, cursor: 'pointer', fontWeight: 700, fontFamily: "'Source Sans 3', sans-serif" }}
+              <button style={{ background: 'rgba(39,174,96,0.2)', border: '1px solid rgba(39,174,96,0.4)', color: '#2ecc71', padding: '8px 20px', borderRadius: 6, fontSize: 13, cursor: 'pointer', fontWeight: 700, fontFamily: "'Source Sans 3', sans-serif" }}
                 onClick={async () => {
                   if (!createForm.username || !createForm.password) { setActionStatus('⚠️ Username and password are required.'); return }
                   setActionStatus('Creating account...')
@@ -240,13 +222,8 @@ export default function AdminPanel({ user, logout }) {
                     const token = localStorage.getItem('mun_token')
                     const res = await fetch('/api/admin-create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, ...createForm }) })
                     const data = await res.json()
-                    if (data.success) {
-                      setActionStatus(`✅ Account "${createForm.username}" created successfully.`)
-                      setCreateForm({ username: '', password: '', role: 'basic', name: '' })
-                      fetchUsers()
-                    } else {
-                      setActionStatus('❌ ' + (data.error || 'Failed to create account.'))
-                    }
+                    if (data.success) { setActionStatus(`✅ Account "${createForm.username}" created successfully.`); setCreateForm({ username: '', password: '', role: 'basic', name: '' }); fetchUsers() }
+                    else setActionStatus('❌ ' + (data.error || 'Failed to create account.'))
                   } catch { setActionStatus('❌ Request failed.') }
                 }}>
                 Create Account
@@ -267,17 +244,10 @@ export default function AdminPanel({ user, logout }) {
               ].map(({ label, key, type, width, placeholder }) => (
                 <div key={key}>
                   <div style={s.fieldLabel}>{label}</div>
-                  <input
-                    style={{ ...s.input, width }}
-                    type={type}
-                    placeholder={placeholder}
-                    value={editForm[key]}
-                    onChange={e => setEditForm(p => ({ ...p, [key]: e.target.value }))}
-                  />
+                  <input style={{ ...s.input, width }} type={type} placeholder={placeholder} value={editForm[key]} onChange={e => setEditForm(p => ({ ...p, [key]: e.target.value }))} />
                 </div>
               ))}
-              <button
-                style={{ background: 'rgba(0,158,219,0.2)', border: '1px solid rgba(0,158,219,0.4)', color: '#009EDB', padding: '8px 20px', borderRadius: 6, fontSize: 13, cursor: 'pointer', fontWeight: 700, fontFamily: "'Source Sans 3', sans-serif" }}
+              <button style={{ background: 'rgba(0,158,219,0.2)', border: '1px solid rgba(0,158,219,0.4)', color: '#009EDB', padding: '8px 20px', borderRadius: 6, fontSize: 13, cursor: 'pointer', fontWeight: 700, fontFamily: "'Source Sans 3', sans-serif" }}
                 onClick={async () => {
                   if (!editForm.username) { setActionStatus('⚠️ Current username is required.'); return }
                   if (!editForm.newUsername && !editForm.newName && !editForm.newPassword) { setActionStatus('⚠️ Fill in at least one field to change.'); return }
@@ -286,13 +256,8 @@ export default function AdminPanel({ user, logout }) {
                     const token = localStorage.getItem('mun_token')
                     const res = await fetch('/api/admin-edit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, ...editForm }) })
                     const data = await res.json()
-                    if (data.success) {
-                      setActionStatus(`✅ "${editForm.username}" updated successfully.`)
-                      setEditForm({ username: '', newUsername: '', newName: '', newPassword: '' })
-                      fetchUsers()
-                    } else {
-                      setActionStatus('❌ ' + (data.error || 'Failed to update account.'))
-                    }
+                    if (data.success) { setActionStatus(`✅ "${editForm.username}" updated successfully.`); setEditForm({ username: '', newUsername: '', newName: '', newPassword: '' }); fetchUsers() }
+                    else setActionStatus('❌ ' + (data.error || 'Failed to update account.'))
                   } catch { setActionStatus('❌ Request failed.') }
                 }}>
                 Save Changes
