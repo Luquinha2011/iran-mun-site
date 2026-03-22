@@ -10,6 +10,8 @@ export default function AdminPanel({ user, logout }) {
   const [actionStatus, setActionStatus] = useState('')
   const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')
+  const [createForm, setCreateForm] = useState({ username: '', password: '', role: 'basic', name: '' })
+  const [editForm, setEditForm] = useState({ username: '', newUsername: '', newName: '', newPassword: '' })
 
   useEffect(() => {
     if (!user) return
@@ -83,6 +85,8 @@ export default function AdminPanel({ user, logout }) {
     input: { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'white', padding: '8px 14px', borderRadius: 6, fontSize: 13, outline: 'none', fontFamily: "'Source Sans 3', sans-serif" },
     filterBtn: (active) => ({ background: active ? '#009EDB' : 'rgba(255,255,255,0.06)', border: '1px solid ' + (active ? '#009EDB' : 'rgba(255,255,255,0.12)'), color: active ? 'white' : 'rgba(255,255,255,0.5)', padding: '6px 14px', borderRadius: 6, fontSize: 12, cursor: 'pointer', fontFamily: "'Source Sans 3', sans-serif", fontWeight: 600 }),
     blockBtn: (blocked) => ({ background: blocked ? 'rgba(39,174,96,0.15)' : 'rgba(192,57,43,0.15)', border: '1px solid ' + (blocked ? 'rgba(39,174,96,0.4)' : 'rgba(192,57,43,0.4)'), color: blocked ? '#2ecc71' : '#e74c3c', padding: '5px 14px', borderRadius: 5, fontSize: 12, cursor: 'pointer', fontWeight: 700, fontFamily: "'Source Sans 3', sans-serif", whiteSpace: 'nowrap' }),
+    sectionTitle: { fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 14 },
+    fieldLabel: { fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 4 },
   }
 
   if (!user || user.role !== 'admin') return null
@@ -91,6 +95,8 @@ export default function AdminPanel({ user, logout }) {
     <>
       <Head><title>Admin Panel — MUN Toolkit</title></Head>
       <div style={s.page}>
+
+        {/* HEADER */}
         <div style={s.header}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <span style={{ fontSize: 28 }}>🇺🇳</span>
@@ -125,8 +131,9 @@ export default function AdminPanel({ user, logout }) {
 
           {/* STATUS MESSAGE */}
           {actionStatus && (
-            <div style={{ background: 'rgba(0,158,219,0.1)', border: '1px solid rgba(0,158,219,0.3)', color: '#7dd4f8', padding: '10px 16px', borderRadius: 6, marginBottom: 16, fontSize: 13 }}>
-              {actionStatus}
+            <div style={{ background: 'rgba(0,158,219,0.1)', border: '1px solid rgba(0,158,219,0.3)', color: '#7dd4f8', padding: '10px 16px', borderRadius: 6, marginBottom: 16, fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>{actionStatus}</span>
+              <button onClick={() => setActionStatus('')} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', fontSize: 16, lineHeight: 1 }}>✕</button>
             </div>
           )}
 
@@ -135,7 +142,7 @@ export default function AdminPanel({ user, logout }) {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.7)', letterSpacing: 0.5 }}>All Users ({filteredUsers.length})</div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                <input style={{ ...s.input, width: 180 }} placeholder="Search username..." value={search} onChange={e => setSearch(e.target.value)} />
+                <input style={{ ...s.input, width: 180 }} placeholder="Search username or name..." value={search} onChange={e => setSearch(e.target.value)} />
                 {['all', 'admin', 'plus', 'basic'].map(f => (
                   <button key={f} style={s.filterBtn(filter === f)} onClick={() => setFilter(f)}>{f.charAt(0).toUpperCase() + f.slice(1)}</button>
                 ))}
@@ -195,12 +202,110 @@ export default function AdminPanel({ user, logout }) {
             )}
           </div>
 
+          {/* CREATE ACCOUNT */}
+          <div style={s.card}>
+            <div style={s.sectionTitle}>➕ Create New Account</div>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+              {[
+                { label: 'Username', key: 'username', type: 'text', width: 140 },
+                { label: 'Full Name', key: 'name', type: 'text', width: 140 },
+                { label: 'Password', key: 'password', type: 'password', width: 140 },
+              ].map(({ label, key, type, width }) => (
+                <div key={key}>
+                  <div style={s.fieldLabel}>{label}</div>
+                  <input
+                    style={{ ...s.input, width }}
+                    type={type}
+                    placeholder={label.toLowerCase()}
+                    value={createForm[key]}
+                    onChange={e => setCreateForm(p => ({ ...p, [key]: e.target.value }))}
+                  />
+                </div>
+              ))}
+              <div>
+                <div style={s.fieldLabel}>Role</div>
+                <select style={{ ...s.input, width: 110 }} value={createForm.role}
+                  onChange={e => setCreateForm(p => ({ ...p, role: e.target.value }))}>
+                  <option value="basic">Basic</option>
+                  <option value="plus">Plus</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <button
+                style={{ background: 'rgba(39,174,96,0.2)', border: '1px solid rgba(39,174,96,0.4)', color: '#2ecc71', padding: '8px 20px', borderRadius: 6, fontSize: 13, cursor: 'pointer', fontWeight: 700, fontFamily: "'Source Sans 3', sans-serif" }}
+                onClick={async () => {
+                  if (!createForm.username || !createForm.password) { setActionStatus('⚠️ Username and password are required.'); return }
+                  setActionStatus('Creating account...')
+                  try {
+                    const token = localStorage.getItem('mun_token')
+                    const res = await fetch('/api/admin-create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, ...createForm }) })
+                    const data = await res.json()
+                    if (data.success) {
+                      setActionStatus(`✅ Account "${createForm.username}" created successfully.`)
+                      setCreateForm({ username: '', password: '', role: 'basic', name: '' })
+                      fetchUsers()
+                    } else {
+                      setActionStatus('❌ ' + (data.error || 'Failed to create account.'))
+                    }
+                  } catch { setActionStatus('❌ Request failed.') }
+                }}>
+                Create Account
+              </button>
+            </div>
+          </div>
+
+          {/* EDIT ACCOUNT */}
+          <div style={s.card}>
+            <div style={s.sectionTitle}>✏️ Edit Account — Change Username / Name / Password</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginBottom: 12, fontStyle: 'italic' }}>Fill in only the fields you want to change. Leave others blank.</div>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+              {[
+                { label: 'Current Username', key: 'username', type: 'text', width: 150, placeholder: 'current username' },
+                { label: 'New Username', key: 'newUsername', type: 'text', width: 150, placeholder: 'leave blank to keep' },
+                { label: 'New Full Name', key: 'newName', type: 'text', width: 150, placeholder: 'leave blank to keep' },
+                { label: 'New Password', key: 'newPassword', type: 'password', width: 150, placeholder: 'leave blank to keep' },
+              ].map(({ label, key, type, width, placeholder }) => (
+                <div key={key}>
+                  <div style={s.fieldLabel}>{label}</div>
+                  <input
+                    style={{ ...s.input, width }}
+                    type={type}
+                    placeholder={placeholder}
+                    value={editForm[key]}
+                    onChange={e => setEditForm(p => ({ ...p, [key]: e.target.value }))}
+                  />
+                </div>
+              ))}
+              <button
+                style={{ background: 'rgba(0,158,219,0.2)', border: '1px solid rgba(0,158,219,0.4)', color: '#009EDB', padding: '8px 20px', borderRadius: 6, fontSize: 13, cursor: 'pointer', fontWeight: 700, fontFamily: "'Source Sans 3', sans-serif" }}
+                onClick={async () => {
+                  if (!editForm.username) { setActionStatus('⚠️ Current username is required.'); return }
+                  if (!editForm.newUsername && !editForm.newName && !editForm.newPassword) { setActionStatus('⚠️ Fill in at least one field to change.'); return }
+                  setActionStatus('Saving changes...')
+                  try {
+                    const token = localStorage.getItem('mun_token')
+                    const res = await fetch('/api/admin-edit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, ...editForm }) })
+                    const data = await res.json()
+                    if (data.success) {
+                      setActionStatus(`✅ "${editForm.username}" updated successfully.`)
+                      setEditForm({ username: '', newUsername: '', newName: '', newPassword: '' })
+                      fetchUsers()
+                    } else {
+                      setActionStatus('❌ ' + (data.error || 'Failed to update account.'))
+                    }
+                  } catch { setActionStatus('❌ Request failed.') }
+                }}>
+                Save Changes
+              </button>
+            </div>
+          </div>
+
           {/* ACCESS GUIDE */}
           <div style={s.card}>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 14 }}>Access Level Guide</div>
+            <div style={s.sectionTitle}>Access Level Guide</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
               {[
-                { role: 'Admin', color: '#c9a84c', items: ['MUN Toolkit home page', 'Iran research page', 'China research page', 'AI briefing (no password)', 'AI chatbot', 'Update All Sections', 'Admin panel — block/unblock accounts'] },
+                { role: 'Admin', color: '#c9a84c', items: ['MUN Toolkit home page', 'Iran research page', 'China research page', 'AI briefing (no password)', 'AI chatbot', 'Update All Sections', 'Admin panel — block/unblock/create/edit accounts'] },
                 { role: 'Plus', color: '#009EDB', items: ['MUN Toolkit home page', 'Iran research page', 'China research page', 'AI briefing (no password)', 'AI chatbot'] },
                 { role: 'Basic', color: '#555', items: ['MUN Toolkit home page', 'Iran research page — read only', 'China research page — read only', 'No AI features'] },
               ].map(({ role, color, items }) => (
