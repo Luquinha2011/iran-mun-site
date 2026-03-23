@@ -250,7 +250,7 @@ function Chatbot() {
   const formatMessage = (text) => text.split('\n').map((line, i) => { const isBullet = line.trim().startsWith('- ') || line.trim().startsWith('• '); const cleaned = line.replace(/^[-•]\s+/, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); return <div key={i} style={{ display: 'flex', gap: isBullet ? 8 : 0, marginBottom: line.trim() ? 4 : 2, paddingLeft: isBullet ? 4 : 0 }}>{isBullet && <span style={{ color: 'var(--gold)', flexShrink: 0, marginTop: 1 }}>→</span>}<span dangerouslySetInnerHTML={{ __html: cleaned }} /></div> })
   return (
     <>
-      <button className="chat-fab" onClick={() => setOpen(o => !o)} title="Ask Iran MUN Assistant">{open ? '✕' : '💬'}{!open && <span className="chat-fab-label">MUN Assistant</span>}</button>
+      <button className="chat-fab" onClick={() => setOpen(o => !o)} title="Ask Iran MUN Assistant">{open ? '✕' : '💬'}{!open && <span className="chat-fab-label">Iran Assistant</span>}</button>
       {open && (
         <div className="chat-window">
           <div className="chat-header"><div><div className="chat-header-title">🇮🇷 Iran MUN Assistant</div><div className="chat-header-sub">Powered by Groq AI</div></div><button className="chat-close" onClick={() => setOpen(false)}>✕</button></div>
