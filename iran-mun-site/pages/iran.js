@@ -228,7 +228,7 @@ function NavBar({ router }) {
 
 function Chatbot() {
   const [open, setOpen] = useState(false)
-  const [messages, setMessages] = useState([{ role: 'assistant', content: "Hello! I am your Iran MUN research assistant. Ask me anything about Iran's position at ECOSOC, MUN procedures, or current events." }])
+  const [messages, setMessages] = useState([{ role: 'assistant', content: "Hello! I am Lucas, your Iran MUN research assistant. Ask me anything about Iran's position at ECOSOC, MUN procedures, or current events." }])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(true)
@@ -250,10 +250,10 @@ function Chatbot() {
   const formatMessage = (text) => text.split('\n').map((line, i) => { const isBullet = line.trim().startsWith('- ') || line.trim().startsWith('• '); const cleaned = line.replace(/^[-•]\s+/, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); return <div key={i} style={{ display: 'flex', gap: isBullet ? 8 : 0, marginBottom: line.trim() ? 4 : 2, paddingLeft: isBullet ? 4 : 0 }}>{isBullet && <span style={{ color: 'var(--gold)', flexShrink: 0, marginTop: 1 }}>→</span>}<span dangerouslySetInnerHTML={{ __html: cleaned }} /></div> })
   return (
     <>
-      <button className="chat-fab" onClick={() => setOpen(o => !o)} title="Ask Iran MUN Assistant">{open ? '✕' : '💬'}{!open && <span className="chat-fab-label">Iran Assistant</span>}</button>
+      <button className="chat-fab" onClick={() => setOpen(o => !o)} title="Ask Iran MUN Assistant">{open ? '✕' : '💬'}{!open && <span className="chat-fab-label">Lucas</span>}</button>
       {open && (
         <div className="chat-window">
-          <div className="chat-header"><div><div className="chat-header-title">🇮🇷 Iran MUN Assistant</div><div className="chat-header-sub">Powered by Groq AI</div></div><button className="chat-close" onClick={() => setOpen(false)}>✕</button></div>
+          <div className="chat-header"><div><div className="chat-header-title">🇮🇷 Lucas: Iran MUN Assistant</div><div className="chat-header-sub">Powered by Groq AI</div></div><button className="chat-close" onClick={() => setOpen(false)}>✕</button></div>
           <div className="chat-messages">
             {messages.map((msg, i) => <div key={i} className={`chat-msg ${msg.role}`}>{msg.role === 'assistant' && <div className="chat-avatar">🤖</div>}<div className="chat-bubble">{formatMessage(msg.content)}</div></div>)}
             {loading && <div className="chat-msg assistant"><div className="chat-avatar">🤖</div><div className="chat-bubble chat-typing"><span></span><span></span><span></span></div></div>}
