@@ -69,7 +69,7 @@ const MADE_BY = (
 
 function Chatbot() {
   const [open, setOpen] = useState(false)
-  const [messages, setMessages] = useState([{ role: 'assistant', content: "Hello! I am your MUN research assistant. Ask me anything about procedures, resolution writing, committee rules, or how to argue any country's position." }])
+  const [messages, setMessages] = useState([{ role: 'assistant', content: "Hello! I am Sacul, your MUN research assistant. Ask me anything about procedures, resolution writing, committee rules, or how to argue any country's position." }])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const messagesEndRef = useRef(null)
@@ -91,7 +91,7 @@ function Chatbot() {
   return (
     <>
       <button onClick={() => setOpen(o => !o)} style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1000, background: '#009EDB', color: 'white', border: 'none', borderRadius: open ? '50%' : 30, padding: open ? '14px' : '12px 20px', fontSize: open ? 18 : 13, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 20px rgba(0,158,219,0.4)', display: 'flex', alignItems: 'center', gap: 8, fontFamily: "'Source Sans 3', sans-serif", transition: 'all 0.2s' }}>
-        {open ? '✕' : <><span>💬</span><span>MUN Assistant</span></>}
+        {open ? '✕' : <><span>💬</span><span>Sacul AI</span></>}
       </button>
       {open && (
         <div style={{ position: 'fixed', bottom: 80, right: 24, zIndex: 999, width: 380, height: 520, background: '#0a1628', borderRadius: 12, boxShadow: '0 8px 40px rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', flexDirection: 'column', overflow: 'hidden', fontFamily: "'Source Sans 3', sans-serif" }}>
