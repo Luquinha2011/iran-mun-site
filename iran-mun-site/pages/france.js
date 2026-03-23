@@ -186,7 +186,7 @@ function NavBar({ router }) {
 
 function Chatbot() {
   const [open, setOpen] = useState(false)
-  const [messages, setMessages] = useState([{ role: 'assistant', content: "Bonjour! I am your France MUN research assistant. Ask me anything about France's position at ECOSOC, HRC, DISEC, or UNEP, its foreign policy, nuclear strategy, or MUN procedures." }])
+  const [messages, setMessages] = useState([{ role: 'assistant', content: "Bonjour! I am Sacul, your France MUN research assistant. Ask me anything about France's position at ECOSOC, HRC, DISEC, or UNEP, its foreign policy, nuclear strategy, or MUN procedures." }])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const messagesEndRef = useRef(null)
@@ -207,7 +207,7 @@ function Chatbot() {
   const fmt = (text) => text.split('\n').map((line, i) => { const b = line.trim().startsWith('- ') || line.trim().startsWith('• '); const c = line.replace(/^[-•]\s+/, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); return <div key={i} style={{ display: 'flex', gap: b ? 8 : 0, marginBottom: line.trim() ? 4 : 2 }}>{b && <span style={{ color: '#ED2939', flexShrink: 0 }}>→</span>}<span dangerouslySetInnerHTML={{ __html: c }} /></div> })
   return (
     <>
-      <button className="chat-fab" style={{ background: '#ED2939' }} onClick={() => setOpen(o => !o)} title="Ask France MUN Assistant">{open ? '✕' : '💬'}{!open && <span className="chat-fab-label">France Assistant</span>}</button>
+      <button className="chat-fab" style={{ background: '#ED2939' }} onClick={() => setOpen(o => !o)} title="Ask France MUN Assistant">{open ? '✕' : '💬'}{!open && <span className="chat-fab-label">Sacul AI</span>}</button>
       {open && (
         <div className="chat-window">
           <div className="chat-header" style={{ background: 'linear-gradient(135deg, #00209F, #ED2939)' }}>
