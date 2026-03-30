@@ -198,7 +198,7 @@ function NavBar({ router }) {
 
 function Chatbot() {
   const [open, setOpen] = useState(false)
-  const [messages, setMessages] = useState([{ role: 'assistant', content: "Hello! I am SACUL AI, your Australia MUN research assistant. Ask me anything about Australia's position at ECOSOC, HRC, DISEC, or UNEP, its Indo-Pacific strategy, or MUN procedures." }])
+  const [messages, setMessages] = useState([{ role: 'assistant', content: "Hello! I am Sacul AI, your Australia MUN research assistant. Ask me anything about Australia's position at ECOSOC, HRC, DISEC, or UNEP, its Indo-Pacific strategy, or MUN procedures." }])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const messagesEndRef = useRef(null)
@@ -229,7 +229,7 @@ function Chatbot() {
       {open && (
         <div className="chat-window">
           <div className="chat-header" style={{ background: 'linear-gradient(135deg, #00008B, #0000CD)' }}>
-            <div><div className="chat-header-title">🇦🇺 Australia MUN Assistant</div><div className="chat-header-sub">SACUL AI · Powered by Groq</div></div>
+            <div><div className="chat-header-title">🇦🇺 Sacul AI</div><div className="chat-header-sub">SACUL AI · Powered by Groq</div></div>
             <button className="chat-close" onClick={() => setOpen(false)}>✕</button>
           </div>
           <div className="chat-messages">
