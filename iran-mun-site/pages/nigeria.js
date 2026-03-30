@@ -210,7 +210,7 @@ function Chatbot() {
       {open && (
         <div className="chat-window">
           <div className="chat-header" style={{ background: 'linear-gradient(135deg, #1a4a1a, #008751)' }}>
-            <div><div className="chat-header-title">🇳🇬 Nigeria MUN Assistant</div><div className="chat-header-sub">Powered by Groq AI</div></div>
+            <div><div className="chat-header-title">🇳🇬 Sacul AI</div><div className="chat-header-sub">Powered by Groq AI</div></div>
             <button className="chat-close" onClick={() => setOpen(false)}>✕</button>
           </div>
           <div className="chat-messages">
