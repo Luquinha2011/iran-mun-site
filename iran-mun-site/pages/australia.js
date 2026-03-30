@@ -225,7 +225,7 @@ function Chatbot() {
   const fmt = (text) => text.split('\n').map((line, i) => { const b = line.trim().startsWith('- ') || line.trim().startsWith('• '); const c = line.replace(/^[-•]\s+/, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); return <div key={i} style={{ display: 'flex', gap: b ? 8 : 0, marginBottom: line.trim() ? 4 : 2 }}>{b && <span style={{ color: '#FFD700', flexShrink: 0 }}>→</span>}<span dangerouslySetInnerHTML={{ __html: c }} /></div> })
   return (
     <>
-      <button className="chat-fab" style={{ background: '#00008B' }} onClick={() => setOpen(o => !o)} title="Ask SACUL AI">{open ? '✕' : '💬'}{!open && <span className="chat-fab-label">Australia Assistant</span>}</button>
+      <button className="chat-fab" style={{ background: '#00008B' }} onClick={() => setOpen(o => !o)} title="Ask SACUL AI">{open ? '✕' : '💬'}{!open && <span className="chat-fab-label">Sacul AI</span>}</button>
       {open && (
         <div className="chat-window">
           <div className="chat-header" style={{ background: 'linear-gradient(135deg, #00008B, #0000CD)' }}>
